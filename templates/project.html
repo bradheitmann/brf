@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<!--
+  ============================================================================
+  brf PROJECT TEMPLATE 1.0.0  ·  zero JavaScript, one file
+  ============================================================================
+  Copy this file, fill every slot, expand the repeat blocks, then build:
+
+      brf build <work_dir>/my-project.filled.html --out <work_dir>/brf_my-project_20260131.html --verify
+  Name every output brf_[repo-name]_[yyyymmdd].html (PROTOCOL.md, Naming and filing).
+  Keep the brf-template meta tag in the head: the build reads it and stamps the
+  brief number, the brf version and this template's version into the page.
+
+  Read PROTOCOL.md first. It carries the Project Card vocabulary, the voice
+  rules and the length budget. This comment block is mechanics only, and the
+  build strips it (and every other HTML comment) out of the finished file.
+
+  RULES OF THIS FILE
+  - Every slot is a NAME in double curly braces. Every one must be filled; the
+    build refuses a file with one left.
+  - A repeatable item sits between a pair of marker comments, an opening
+    "repeat: NAME" and a closing "/repeat". Duplicate the whole block once per
+    item, fill each copy, then delete both markers. The build refuses a file
+    that still carries one.
+  - The FONTS_CSS marker, a CSS comment at the top of the style element, is where
+    the build injects the embedded faces. Leave it exactly as it is.
+  - Prose slots take plain sentences. Use a strong element for emphasis, nothing else.
+
+  SLOTS, in document order
+  ---------------------------------------------------------------------------
+  DOCUMENT_TITLE          browser tab and file title, e.g. "Tidewater re-entry brief"
+  LOGO_SVG                the project's SVG mark, pasted inline. May be left empty.
+  PROJECT_NAME            the project's name, exactly as the reader knows it
+  BRIEFING_DATE           the date this briefing describes, e.g. "14 September 2026"
+  AWAY_BADGE_TEXT         how long the reader has been away, e.g. "Away 21 days"
+  STAGE_BADGE_CLASS       badge class for the Stage word (see the mapping below)
+  STAGE_BADGE_TEXT        the Stage word itself, e.g. "Live"
+  HEALTH_BADGE_CLASS      badge class for the Health word
+  HEALTH_BADGE_TEXT       the Health word itself, e.g. "Needs attention"
+
+  WHAT_IT_IS              one plain sentence a stranger could read aloud
+  WHO_DEPENDS_ON_IT       the named people, teams and projects that depend on it
+  STAGE_NOTE              one clause qualifying the Stage badge, e.g. "Maintaining, and making it more robust."
+  HEALTH_NOTE             one sentence saying why the Health word is the right word
+  MOMENTUM_BADGE_CLASS    badge class for the Momentum word
+  MOMENTUM_BADGE_TEXT     the Momentum word itself, e.g. "Fast"
+  MOMENTUM_NOTE           the plain reason, e.g. "A lot was finished. None of it went out."
+  BOTTLENECK_BADGE_CLASS  badge class for the Bottleneck word
+  BOTTLENECK_BADGE_TEXT   the Bottleneck word itself, e.g. "You"
+  BOTTLENECK_NOTE         one sentence on who is holding it and why
+  TIME_BADGE_CLASS        badge class for the Your-time word
+  TIME_BADGE_TEXT         the Your-time word itself, e.g. "30 min"
+  TIME_NOTE              by when, e.g. "This week."
+  IF_YOU_DO_NOTHING       one sentence: the cost of neglect. The prioritisation signal.
+  ATTENTION_FILLED        1 to 5. CSS fills that many dots.
+  ATTENTION_BADGE_TEXT    the same number in words, e.g. "4 of 5"
+  ATTENTION_REASON        one line stating the trade between cost of neglect and the reader's time
+
+  IN_ONE_BREATH           three or four sentences. The only thing to read if nothing else.
+  WHY_IT_MATTERS          two or three sentences: why this project exists and what it makes possible in general
+  UNLOCK_PROJECT          repeatable, with UNLOCK_WHAT. Another project in the portfolio, by its everyday name.
+  UNLOCK_WHAT             what this project unlocks for it, in one sentence. Begins with a space.
+
+  D1_QUESTION             decision 1, the question in plain words
+  D1_OPTION_A             the first choice and what it costs
+  D1_OPTION_B             the second choice and what it costs
+  D1_RECOMMENDATION       which one, and the honest reason. Never erase the risk.
+  D1_IF_YOU_WAIT          what waiting costs, per week or per month
+  D1_YOUR_TIME            the reader's time, e.g. "5 minutes to say which."
+  D2_QUESTION … D2_YOUR_TIME   the same six parts for decision 2
+
+  FIXED_NOTE              one line covering the whole Fixed list, e.g. whether any of it shipped
+  FIXED_ITEM              repeatable. One outcome per item, in plain words.
+  BUILT_ITEM              repeatable.
+  CLEANED_ITEM            repeatable.
+  CHART_TITLE             what the chart counts, e.g. "Chart: finished work against published work, all time"
+  CHART_ROW_1_LABEL       first bar's label
+  CHART_ROW_1_VALUE       first bar's number
+  CHART_ROW_1_WIDTH       first bar's width as a percentage of the largest value. Largest = 100.
+  CHART_ROW_2_* , CHART_ROW_3_*   the same three for bars two and three
+  CHART_READ              one line saying what the shape means
+
+  RIGHT_NOW_1             who is working on it. Say "nobody" when it is nobody.
+  RIGHT_NOW_2             how the work gets done here, honestly
+
+  WAY_IN_PM               two sentences: who the project manager is (the agent role that runs this repo) and what it will do for you on day one
+  WAY_IN_ITEM             repeatable. One concrete first move, e.g. "Ask the PM for a ten-minute walkthrough of the live product."
+  STEP_LEAD               repeatable, with STEP_REST. The step itself, in bold.
+  STEP_REST               what it unlocks. Begins with a space, or with the punctuation that follows the bold.
+
+  PRIOR_NOTE              which earlier briefing this one follows, e.g. "Follows the 15 September briefing." or "First briefing for this project."
+  PRIOR_LEAD              repeatable, with PRIOR_REST. A decision or next step from the last briefing, in bold.
+  PRIOR_REST              what happened to it since, in one sentence. Begins with a space.
+  RISK_TITLE              repeatable, with RISK_WHY and RISK_REDUCER. The risk in one line.
+  RISK_WHY                why it matters
+  RISK_REDUCER            what would reduce it, and whether that exists yet
+
+  GLOSSARY_TERM           repeatable, with GLOSSARY_DEFINITION. Six entries at most.
+  GLOSSARY_DEFINITION     one line
+
+  PLAN_SUMMARY            two or three sentences: where planning lives, whether it matches the code, who last updated it
+  PLAN_LOCATION           repeatable, with PLAN_BADGE_CLASS, PLAN_BADGE_TEXT, PLAN_CONTENTS, PLAN_MATCH. A path, e.g. "project/planning/"
+  PLAN_BADGE_CLASS        badge--plan-current · badge--plan-stale · badge--plan-contradicts · badge--plan-archive
+  PLAN_BADGE_TEXT         Current · Stale · Contradicts code · Archive
+  PLAN_CONTENTS           what is there: artifact counts by state and the date of the last update
+  PLAN_MATCH              how it lines up with what is built and committed, in one or two sentences
+  DRIFT_LEAD              repeatable, with DRIFT_REST. One mismatch between planning and code, in bold. Or "No drift found."
+  DRIFT_REST              the evidence and what not to redo. Begins with a space.
+  HYGIENE_SUMMARY         one or two sentences: the auditor and its version (or "read by hand"), read-only, the commit audited, the headline
+  HYG_CATEGORY            repeatable, with HYG_BADGE_CLASS, HYG_BADGE_TEXT, HYG_COUNT, HYG_DETAIL. The category name, from the closed list.
+  HYG_BADGE_CLASS         badge--hyg-clean · badge--hyg-minor · badge--hyg-needs-cleanup · badge--hyg-serious · badge--hyg-not-inspected
+  HYG_BADGE_TEXT          Clean · Minor · Needs cleanup · Serious · Not inspected
+  HYG_COUNT               the finding count, e.g. "18 findings" or "0"
+  HYG_DETAIL              what the findings mean in plain words, with the worst example and its path
+  FOOTER_SOURCES          the source pointers: branch, commit, version, when it was checked
+
+  BADGE CLASSES, the full mapping
+  ---------------------------------------------------------------------------
+  The class is the vocabulary word in kebab case. Nothing outside this list is
+  a legal value, because the whole point of the card is that the same word
+  means the same thing, and carries the same colour, on every project.
+
+    Stage        badge--stage-idea · badge--stage-building · badge--stage-usable
+                 badge--stage-live · badge--stage-maintaining · badge--stage-winding-down
+    Health       badge--health-healthy · badge--health-needs-attention
+                 badge--health-stuck · badge--health-on-fire
+    Momentum     badge--momentum-fast · badge--momentum-steady
+                 badge--momentum-slow · badge--momentum-stopped
+    Bottleneck   badge--bottleneck-you · badge--bottleneck-team
+                 badge--bottleneck-outside-party · badge--bottleneck-none
+    Your time    badge--time-none · badge--time-5-min · badge--time-30-min · badge--time-half-a-day
+    Planning     badge--plan-current · badge--plan-stale · badge--plan-contradicts · badge--plan-archive
+    Hygiene      badge--hyg-clean · badge--hyg-minor · badge--hyg-needs-cleanup
+                 badge--hyg-serious · badge--hyg-not-inspected
+    Attention    badge--attention-score   (fixed; the number lives in the text)
+    Away         badge--away              (fixed; the top bar's time-away badge)
+
+  Colour follows meaning, not the field:
+    green   health-healthy · momentum-fast · bottleneck-none · time-none · plan-current · hyg-clean
+    amber   health-needs-attention · momentum-slow · bottleneck-you · bottleneck-team
+            bottleneck-outside-party · time-half-a-day · plan-stale · hyg-needs-cleanup
+    red     health-stuck · health-on-fire · momentum-stopped · plan-contradicts · hyg-serious
+    neutral every Stage word, momentum-steady, time-5-min, time-30-min, plan-archive, hyg-minor, hyg-not-inspected,
+            attention-score, away
+  ============================================================================
+-->
+<html lang="en" data-style="stillness">
+<head>
+<meta charset="utf-8">
+<meta name="brf-template" content="project 1.0.0">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{DOCUMENT_TITLE}}</title>
+<style>
+/* {{FONTS_CSS}} */
+
+/* ===================== THEME TOKENS, the stillness palette ===================== */
+:root {
+  /* ---------- VARIANT: stillness. Swap this section for another variant. ---------- */
+  --brf-semantic-surface-default:    #F7F5F2;
+  --brf-semantic-surface-alt:        #EDEDEA;
+  --brf-semantic-surface-warm:       #FEFEFE;
+  --brf-semantic-surface-chrome:     #1A1A18;
+  --brf-semantic-fg1:                #1A1A18;
+  --brf-semantic-fg2:                #4A4A45;
+  --brf-semantic-fg3:                #6E6E66;
+  --brf-semantic-fg-on-dark:         #F7F5F2;
+  --brf-semantic-fg-accent:          #3D4F6F;
+  --brf-semantic-border-default:     #E0DDD8;
+  --brf-semantic-border-strong:      #1A1A18;
+  --brf-semantic-border-accent:      #3D4F6F;
+  --brf-semantic-entity-primary:     #1A1A18;
+  --brf-semantic-entity-secondary-a: #3D4F6F;
+  --brf-semantic-entity-secondary-b: #8B7355;
+  --brf-signal-pass:                 #2D5E33;
+  --brf-signal-pass-surface:         #F0FAF2;
+  --brf-signal-caution:              #8A6B22;
+  --brf-signal-caution-surface:      #FDF8EF;
+  --brf-signal-risk:                 #7A2E26;
+  --brf-signal-risk-surface:         #FAF0F0;
+  --brf-signal-info:                 #3D4F6F;
+  --brf-signal-info-surface:         #EDEDEA;
+  --brf-accent-fill-surface:         #3D4F6F;  /* the one sanctioned accent fill: the attention dial */
+  --brf-accent-fill-text:            #F7F5F2;
+  --brf-focus-ring-color:            #1A1A18;
+
+  /* ---------- STRUCTURAL: universal across every variant. Leave alone. ---------- */
+  --brf-space-1: 4px;  --brf-space-2: 8px;  --brf-space-3: 12px; --brf-space-4: 16px;
+  --brf-space-5: 24px; --brf-space-6: 32px; --brf-space-7: 40px; --brf-space-8: 48px;
+  --brf-radii-none: 0; --brf-radii-sm: 2px; --brf-radii-md: 4px; --brf-radii-circle: 50%;
+  --brf-border-hair: 1px; --brf-border-thick: 2px; --brf-border-emphasis: 3px;
+  --brf-focus-ring-width: 2px; --brf-focus-ring-offset: 2px;
+  --brf-touch-target-min: 44px;
+  --brf-container-prose: 680px;  /* the system's reading measure */
+
+  /* ---------- TYPE: three role faces, four embedded weights, six named stops. ---------- */
+  --font-display: 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
+  --font-body:    'Inter', -apple-system, 'Helvetica Neue', Arial, sans-serif;
+  --font-mono:    'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+
+  --t-display: clamp(1.875rem, 1.4rem + 2vw, 2.5rem);   /* the project name */
+  --t-h2:      clamp(1.55rem, 1.25rem + 1.2vw, 2rem);   /* section headings */
+  --t-body:    1.0625rem;  /* 17px */
+  --t-body-sm: 0.9375rem;  /* 15px */
+  --t-label:   0.8125rem;  /* 13px — badges and every labelled pattern; the floor for meaning */
+  --t-micro:   0.75rem;    /* 12px — the two top-bar prefixes only, each beside a 13px badge; 12px is the phone floor for any text */
+
+  --tr-tight: -0.02em; --tr-snug: -0.01em; --tr-caps: 0.1em; --tr-wide: 0.04em;
+  --w-regular: 400; --w-strong: 600;  /* two weights; 600 is the brand ceiling */
+}
+
+/* ===================== RESET ===================== */
+*, *::before, *::after { box-sizing: border-box; }
+html { font-size: 100%; -webkit-text-size-adjust: 100%; }
+html, body { margin: 0; padding: 0; }
+body {
+  background: var(--brf-semantic-surface-default);
+  color: var(--brf-semantic-fg1);
+  font-family: var(--font-body);
+  font-weight: var(--w-regular);
+  font-size: var(--t-body);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+h1, h2, h3, p, dl, dd, ol, ul, table { margin: 0; }
+ol, ul { padding: 0; }
+table { border-collapse: collapse; width: 100%; }
+img, svg { max-width: 100%; }
+strong, b { font-weight: var(--w-strong); }
+a { color: var(--brf-semantic-fg-accent); text-decoration-thickness: 1px; }
+a:focus-visible, summary:focus-visible {
+  outline: var(--brf-focus-ring-width) solid var(--brf-focus-ring-color);
+  outline-offset: var(--brf-focus-ring-offset);
+}
+
+/* ===================== TYPE ROLES — four faces, six stops ===================== */
+/* Cormorant Garamond 400 = display · Inter 400 = body · Inter 600 = strong · JetBrains Mono 400 = labels and data. */
+.display { font-family: var(--font-display); font-weight: var(--w-regular); font-size: var(--t-display); line-height: 1.05; letter-spacing: var(--tr-tight); }
+h2 { font-family: var(--font-display); font-weight: var(--w-regular); font-size: var(--t-h2); line-height: 1.1; letter-spacing: var(--tr-snug); }
+h3 { font-family: var(--font-body); font-weight: var(--w-strong); font-size: var(--t-body); line-height: 1.35; letter-spacing: var(--tr-snug); }
+.small { font-size: var(--t-body-sm); line-height: 1.55; }
+.label {
+  font-family: var(--font-mono); font-weight: var(--w-regular); font-size: var(--t-label);
+  line-height: 1.25; letter-spacing: var(--tr-caps); text-transform: uppercase;
+}
+.micro {
+  font-family: var(--font-mono); font-weight: var(--w-regular); font-size: var(--t-micro);
+  line-height: 1.25; letter-spacing: var(--tr-caps); text-transform: uppercase;
+}
+.data { font-family: var(--font-mono); font-weight: var(--w-regular); font-size: var(--t-label); font-variant-numeric: tabular-nums; letter-spacing: var(--tr-wide); }
+
+/* ===================== PAGE ===================== */
+.brief { max-width: var(--brf-container-prose); margin: 0 auto; padding: var(--brf-space-5) var(--brf-space-4) var(--brf-space-8); }
+main > section + section { margin-top: var(--brf-space-7); }
+@media (min-width: 768px) { main > section + section { margin-top: var(--brf-space-8); } }
+section > * + * { margin-top: var(--brf-space-3); }
+section > h2 + * { margin-top: var(--brf-space-4); }
+
+/* ===================== TOP BAR ===================== */
+.topbar { padding-bottom: var(--brf-space-4); border-bottom: var(--brf-border-hair) solid var(--brf-semantic-border-default); }
+.topbar__brand { display: flex; align-items: center; flex-wrap: wrap; gap: var(--brf-space-2) var(--brf-space-3); }
+/* The logo slot collapses completely when it is empty: no element box, so no gap. */
+.topbar__logo { display: inline-flex; flex: 0 0 auto; color: var(--brf-semantic-fg1); }
+.topbar__logo:empty { display: none; }
+/* Logo mark height is deliberate and off the spacing scale: 28px on phone keeps a wordmark legible; 32px at tablet-up is space-6. */
+.topbar__logo svg { display: block; height: 28px; width: auto; }
+@media (min-width: 768px) { .topbar__logo svg { height: var(--brf-space-6); } }
+.topbar__name { min-width: 0; }
+.topbar__meta { display: flex; flex-wrap: wrap; align-items: center; gap: var(--brf-space-2) var(--brf-space-3); margin-top: var(--brf-space-4); }
+.topbar__date { color: var(--brf-semantic-fg2); }
+.topbar__pair { display: inline-flex; align-items: center; gap: var(--brf-space-2); }
+.topbar__prefix { color: var(--brf-semantic-fg2); }
+
+/* ===================== BADGES =====================
+   One neutral base; only Health, Momentum, Bottleneck and Your-time carry signal colour,
+   and the same vocabulary word carries the same colour on every project's card. */
+.badge {
+  display: inline-block; padding: var(--brf-space-1) var(--brf-space-2);
+  border-radius: var(--brf-radii-sm); border: var(--brf-border-hair) solid var(--brf-semantic-border-default);
+  color: var(--brf-semantic-fg1); background: var(--brf-semantic-surface-alt);
+}
+.badge--health-healthy, .badge--momentum-fast, .badge--bottleneck-none, .badge--time-none,
+.badge--plan-current, .badge--hyg-clean {
+  color: var(--brf-signal-pass); background: var(--brf-signal-pass-surface); border-color: var(--brf-signal-pass);
+}
+.badge--health-needs-attention, .badge--momentum-slow, .badge--bottleneck-you,
+.badge--bottleneck-team, .badge--bottleneck-outside-party, .badge--time-half-a-day,
+.badge--plan-stale, .badge--hyg-needs-cleanup {
+  color: var(--brf-signal-caution); background: var(--brf-signal-caution-surface); border-color: var(--brf-signal-caution);
+}
+.badge--health-stuck, .badge--health-on-fire, .badge--momentum-stopped,
+.badge--plan-contradicts, .badge--hyg-serious {
+  color: var(--brf-signal-risk); background: var(--brf-signal-risk-surface); border-color: var(--brf-signal-risk);
+}
+
+/* ===================== PROJECT CARD ===================== */
+.card {
+  border: var(--brf-border-hair) solid var(--brf-semantic-border-default);
+  border-radius: var(--brf-radii-md); background: var(--brf-semantic-surface-warm);
+  padding: var(--brf-space-5) var(--brf-space-4);
+}
+@media (min-width: 640px) { .card { padding: var(--brf-space-5); } }
+/* Inside the card the ground is surface-warm, where only fg1 clears 4.5:1 in every
+   variant. Nothing in here uses fg2, fg3 or the accent as text. */
+.card__table th, .card__table td { text-align: left; vertical-align: top; color: var(--brf-semantic-fg1); }
+.card__table tr { border-bottom: var(--brf-border-hair) solid var(--brf-semantic-border-default); }
+.card__table tr:last-child { border-bottom: none; }
+.card__table td .badge { margin-right: var(--brf-space-2); }
+/* Phone: label over value. A 13px mono label and a full sentence cannot share a row at 360px. */
+@media (max-width: 639px) {
+  .card__table, .card__table tbody, .card__table tr, .card__table th, .card__table td { display: block; width: auto; }
+  .card__table tr { padding: var(--brf-space-3) 0; }
+  .card__table tr:first-child { padding-top: 0; }
+  .card__table tr:last-child { padding-bottom: 0; }
+  .card__table th { padding-bottom: var(--brf-space-2); }
+}
+@media (min-width: 640px) {
+  .card__table th { width: 40%; padding: var(--brf-space-3) var(--brf-space-4) var(--brf-space-3) 0; }
+  .card__table td { padding: var(--brf-space-3) 0; }
+  .card__table tr:first-child th, .card__table tr:first-child td { padding-top: 0; }
+  .card__table tr:last-child th, .card__table tr:last-child td { padding-bottom: 0; }
+}
+/* ---- attention dial ---- */
+.dial-block { margin-top: var(--brf-space-5); padding-top: var(--brf-space-4); border-top: var(--brf-border-hair) solid var(--brf-semantic-border-default); }
+.dial { display: flex; align-items: center; flex-wrap: wrap; gap: var(--brf-space-3) var(--brf-space-4); margin-top: var(--brf-space-3); }
+.dial__dots { display: inline-flex; gap: var(--brf-space-2); flex: 0 0 auto; }
+.dial__dot {
+  display: block; width: var(--brf-space-5); height: var(--brf-space-5); border-radius: var(--brf-radii-circle);
+  border: var(--brf-border-hair) solid var(--brf-semantic-border-default); background: var(--brf-semantic-surface-alt);
+}
+/* data-filled on the dial, 1 to 5, sets how many dots are filled. This is the one accent fill in the document. */
+.dial[data-filled="1"] .dial__dot:nth-child(-n+1),
+.dial[data-filled="2"] .dial__dot:nth-child(-n+2),
+.dial[data-filled="3"] .dial__dot:nth-child(-n+3),
+.dial[data-filled="4"] .dial__dot:nth-child(-n+4),
+.dial[data-filled="5"] .dial__dot:nth-child(-n+5) {
+  background: var(--brf-accent-fill-surface); border-color: var(--brf-accent-fill-surface);
+}
+.dial__reason { margin-top: var(--brf-space-3); color: var(--brf-semantic-fg1); }
+
+/* ===================== IN ONE BREATH ===================== */
+.breath { border-left: var(--brf-border-emphasis) solid var(--brf-semantic-border-accent); padding-left: var(--brf-space-4); }
+
+/* ===================== DECISIONS ===================== */
+.decision { border: var(--brf-border-hair) solid var(--brf-semantic-border-default); border-radius: var(--brf-radii-md); padding: var(--brf-space-4); }
+.decision + .decision { margin-top: var(--brf-space-4); }
+.decision__eyebrow { color: var(--brf-semantic-fg-accent); margin-bottom: var(--brf-space-2); }
+.decision__options { list-style: none; margin-top: var(--brf-space-3); }
+.decision__options li { padding: var(--brf-space-3) 0; border-top: var(--brf-border-hair) solid var(--brf-semantic-border-default); }
+.decision__options li:first-child { border-top: none; }
+.decision__label, .decision__footline .label { display: block; color: var(--brf-semantic-fg-accent); margin-bottom: var(--brf-space-1); }
+.decision__footline--muted .label { color: var(--brf-semantic-fg2); }
+.decision__foot { margin-top: var(--brf-space-3); padding-top: var(--brf-space-3); border-top: var(--brf-border-hair) solid var(--brf-semantic-border-default); }
+.decision__footline + .decision__footline { margin-top: var(--brf-space-3); }
+.decision__footline--muted { color: var(--brf-semantic-fg2); }
+
+/* ===================== WHILE YOU WERE AWAY ===================== */
+.cols > * + * { margin-top: var(--brf-space-6); }
+.list-group + .list-group { margin-top: var(--brf-space-5); }
+.list-group__note { color: var(--brf-semantic-fg2); margin-top: var(--brf-space-2); }
+.list-group__items { list-style: none; margin-top: var(--brf-space-2); }
+.list-group__items li { position: relative; padding: var(--brf-space-2) 0 var(--brf-space-2) var(--brf-space-4); }
+.list-group__items li::before { content: "\2013"; position: absolute; left: 0; color: var(--brf-semantic-fg2); }
+@media (min-width: 900px) {
+  /* This one section carries two columns, so it steps outside the reading measure as a
+     whole, heading included. Half a section sticking out reads as a mistake. */
+  .section--wide { margin-left: calc(-1 * var(--brf-space-7)); margin-right: calc(-1 * var(--brf-space-7)); }
+  .cols { display: grid; grid-template-columns: minmax(0, 1fr) 15rem; gap: var(--brf-space-6); align-items: start; }
+  .cols > * + * { margin-top: 0; }
+  /* The chart is the answer to the list beside it, so it stays in view while the list scrolls. */
+  .chart-col { position: sticky; top: var(--brf-space-5); }
+}
+
+/* ===================== CHART ===================== */
+.chart { margin-top: var(--brf-space-3); }
+.chart__row { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: var(--brf-space-3); row-gap: var(--brf-space-1); margin-top: var(--brf-space-4); }
+.chart__label { grid-column: 1 / -1; color: var(--brf-semantic-fg2); }
+/* A span is inline and would ignore width and height, so both bar parts are blocks. */
+.chart__track { display: block; height: var(--brf-space-4); background: var(--brf-semantic-surface-alt); border-radius: var(--brf-radii-sm); overflow: hidden; }
+.chart__fill { display: block; height: 100%; border-radius: var(--brf-radii-sm); }
+.chart__fill--1 { background: var(--brf-semantic-entity-primary); }
+.chart__fill--2 { background: var(--brf-semantic-entity-secondary-a); }
+.chart__fill--3 { background: var(--brf-semantic-entity-secondary-b); }
+.chart__value { text-align: right; min-width: var(--brf-space-6); }
+.chart__read { margin-top: var(--brf-space-4); }
+.chart__read .label { display: block; color: var(--brf-semantic-fg-accent); margin-bottom: var(--brf-space-1); }
+
+/* ===================== NEXT 30 DAYS ===================== */
+.steps { list-style: none; counter-reset: step; }
+.steps li { counter-increment: step; position: relative; padding: var(--brf-space-3) 0 var(--brf-space-3) var(--brf-space-7); border-top: var(--brf-border-hair) solid var(--brf-semantic-border-default); }
+.steps li:first-child { border-top: none; padding-top: 0; }
+.steps li::before {
+  content: counter(step); position: absolute; left: 0; top: var(--brf-space-3);
+  font-family: var(--font-mono); font-size: var(--t-label); color: var(--brf-semantic-fg-accent);
+  width: var(--brf-space-5); text-align: right;
+}
+.steps li:first-child::before { top: 0; }
+
+/* ===================== RISKS ===================== */
+.risk { padding: var(--brf-space-4) 0; border-top: var(--brf-border-hair) solid var(--brf-semantic-border-default); }
+.risk:first-child { border-top: none; padding-top: 0; }
+.risk__title { font-weight: var(--w-strong); }
+.risk__why { margin-top: var(--brf-space-2); color: var(--brf-semantic-fg2); }
+.risk__reducer { margin-top: var(--brf-space-2); color: var(--brf-semantic-fg2); }
+.risk__reducer .label { display: block; color: var(--brf-semantic-fg-accent); margin-bottom: var(--brf-space-1); }
+
+/* ===================== GLOSSARY ===================== */
+/* On surface-alt only fg1 clears 4.5:1 in every variant, so the whole strip is fg1. */
+.glossary { display: flex; flex-wrap: wrap; gap: var(--brf-space-4) var(--brf-space-5); padding: var(--brf-space-4); background: var(--brf-semantic-surface-alt); border-radius: var(--brf-radii-md); }
+.glossary__entry { flex: 1 1 15rem; min-width: 0; }
+.glossary dt { color: var(--brf-semantic-fg1); }
+.glossary dd { margin-top: var(--brf-space-1); color: var(--brf-semantic-fg1); }
+
+/* ===================== FOOTER ===================== */
+.inv { padding: var(--brf-space-4) 0; border-top: var(--brf-border-hair) solid var(--brf-semantic-border-default); }
+.inv:first-of-type { border-top: none; padding-top: 0; }
+.inv__head { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--brf-space-2) var(--brf-space-3); }
+.inv__title { font-weight: var(--w-strong); overflow-wrap: anywhere; min-width: 0; }
+.inv__count { color: var(--brf-semantic-fg2); }
+.inv__body { margin-top: var(--brf-space-2); color: var(--brf-semantic-fg2); overflow-wrap: anywhere; }
+.inv__match { margin-top: var(--brf-space-2); color: var(--brf-semantic-fg2); overflow-wrap: anywhere; }
+.inv__match .label { display: block; color: var(--brf-semantic-fg-accent); margin-bottom: var(--brf-space-1); }
+.appendix__lead { color: var(--brf-semantic-fg1); margin-bottom: var(--brf-space-4); }
+.drift { margin-top: var(--brf-space-5); }
+.footer { margin-top: var(--brf-space-7); padding-top: var(--brf-space-4); border-top: var(--brf-border-hair) solid var(--brf-semantic-border-default); color: var(--brf-semantic-fg2); }
+
+/* ===================== REDUCED MOTION ===================== */
+/* This document has no transition and no animation. The path is declared so that a later
+   edit which adds one inherits a safe default. */
+@media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; } }
+
+/* ===================== PRINT ===================== */
+@media print {
+  .card, .decision, .risk, .steps li, .glossary { break-inside: avoid; page-break-inside: avoid; }
+  body { background: var(--brf-semantic-surface-default); }
+  .badge, .card, .decision { border-color: var(--brf-semantic-fg1); }
+  .footer, .topbar__date, .topbar__prefix, .chart__label, .risk__why, .risk__reducer, .list-group__note { color: var(--brf-semantic-fg1); }
+  .chart-col { position: static; }
+  a { color: var(--brf-semantic-fg1); text-decoration: underline; }
+}
+</style>
+</head>
+<body>
+<div class="brief">
+
+  <header class="topbar">
+    <div class="topbar__brand">
+      <span class="topbar__logo">{{LOGO_SVG}}</span>
+      <h1 class="display topbar__name">{{PROJECT_NAME}}</h1>
+    </div>
+    <div class="topbar__meta">
+      <span class="label topbar__date">{{BRIEFING_DATE}}</span>
+      <span class="label badge badge--away">{{AWAY_BADGE_TEXT}}</span>
+      <span class="topbar__pair">
+        <span class="micro topbar__prefix">Stage</span>
+        <span class="label badge {{STAGE_BADGE_CLASS}}">{{STAGE_BADGE_TEXT}}</span>
+      </span>
+      <span class="topbar__pair">
+        <span class="micro topbar__prefix">Health</span>
+        <span class="label badge {{HEALTH_BADGE_CLASS}}">{{HEALTH_BADGE_TEXT}}</span>
+      </span>
+    </div>
+  </header>
+
+  <main>
+
+    <section class="card" aria-label="Project card">
+      <table class="card__table">
+        <tbody>
+          <tr>
+            <th scope="row" class="label">What it is</th>
+            <td class="small">{{WHAT_IT_IS}}</td>
+          </tr>
+          <tr>
+            <th scope="row" class="label">Who depends on it</th>
+            <td class="small">{{WHO_DEPENDS_ON_IT}}</td>
+          </tr>
+          <tr>
+            <th scope="row" class="label">Stage</th>
+            <td class="small"><span class="label badge {{STAGE_BADGE_CLASS}}">{{STAGE_BADGE_TEXT}}</span>{{STAGE_NOTE}}</td>
+          </tr>
+          <tr>
+            <th scope="row" class="label">Health</th>
+            <td class="small"><span class="label badge {{HEALTH_BADGE_CLASS}}">{{HEALTH_BADGE_TEXT}}</span>{{HEALTH_NOTE}}</td>
+          </tr>
+          <tr>
+            <th scope="row" class="label">Momentum, last 3 weeks</th>
+            <td class="small"><span class="label badge {{MOMENTUM_BADGE_CLASS}}">{{MOMENTUM_BADGE_TEXT}}</span>{{MOMENTUM_NOTE}}</td>
+          </tr>
+          <tr>
+            <th scope="row" class="label">Bottleneck</th>
+            <td class="small"><span class="label badge {{BOTTLENECK_BADGE_CLASS}}">{{BOTTLENECK_BADGE_TEXT}}</span>{{BOTTLENECK_NOTE}}</td>
+          </tr>
+          <tr>
+            <th scope="row" class="label">Your time needed</th>
+            <td class="small"><span class="label badge {{TIME_BADGE_CLASS}}">{{TIME_BADGE_TEXT}}</span>{{TIME_NOTE}}</td>
+          </tr>
+          <tr>
+            <th scope="row" class="label">If you do nothing</th>
+            <td class="small">{{IF_YOU_DO_NOTHING}}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="dial-block">
+        <p class="label">Attention</p>
+        <div class="dial" data-filled="{{ATTENTION_FILLED}}">
+          <span class="dial__dots" role="img" aria-label="Attention, {{ATTENTION_BADGE_TEXT}}">
+            <span class="dial__dot"></span>
+            <span class="dial__dot"></span>
+            <span class="dial__dot"></span>
+            <span class="dial__dot"></span>
+            <span class="dial__dot"></span>
+          </span>
+          <span class="label badge badge--attention-score">{{ATTENTION_BADGE_TEXT}}</span>
+        </div>
+        <p class="small dial__reason">{{ATTENTION_REASON}}</p>
+      </div>
+    </section>
+
+    <section>
+      <h2>In one breath</h2>
+      <p class="breath">{{IN_ONE_BREATH}}</p>
+    </section>
+
+    <section>
+      <h2>Why it matters</h2>
+      <p>{{WHY_IT_MATTERS}}</p>
+      <h3>What it unlocks for your other projects</h3>
+      <ul class="list-group__items small">
+        <!-- repeat: UNLOCK -->
+        <li><strong>{{UNLOCK_PROJECT}}.</strong>{{UNLOCK_WHAT}}</li>
+        <!-- /repeat -->
+      </ul>
+    </section>
+
+    <section>
+      <h2>What I need from you</h2>
+
+      <div class="decision">
+        <p class="label decision__eyebrow">Decision 1</p>
+        <h3>{{D1_QUESTION}}</h3>
+        <ol class="decision__options small">
+          <li>
+            <span class="label decision__label">Option A</span>
+            {{D1_OPTION_A}}
+          </li>
+          <li>
+            <span class="label decision__label">Option B</span>
+            {{D1_OPTION_B}}
+          </li>
+        </ol>
+        <div class="decision__foot small">
+          <p class="decision__footline"><span class="label">Recommendation</span>{{D1_RECOMMENDATION}}</p>
+          <p class="decision__footline decision__footline--muted"><span class="label">If you wait</span>{{D1_IF_YOU_WAIT}}</p>
+          <p class="decision__footline decision__footline--muted"><span class="label">Your time</span>{{D1_YOUR_TIME}}</p>
+        </div>
+      </div>
+
+      <div class="decision">
+        <p class="label decision__eyebrow">Decision 2</p>
+        <h3>{{D2_QUESTION}}</h3>
+        <ol class="decision__options small">
+          <li>
+            <span class="label decision__label">Option A</span>
+            {{D2_OPTION_A}}
+          </li>
+          <li>
+            <span class="label decision__label">Option B</span>
+            {{D2_OPTION_B}}
+          </li>
+        </ol>
+        <div class="decision__foot small">
+          <p class="decision__footline"><span class="label">Recommendation</span>{{D2_RECOMMENDATION}}</p>
+          <p class="decision__footline decision__footline--muted"><span class="label">If you wait</span>{{D2_IF_YOU_WAIT}}</p>
+          <p class="decision__footline decision__footline--muted"><span class="label">Your time</span>{{D2_YOUR_TIME}}</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section--wide">
+      <h2>While you were away</h2>
+      <div class="cols">
+
+        <div>
+          <div class="list-group">
+            <h3>Fixed</h3>
+            <p class="small list-group__note">{{FIXED_NOTE}}</p>
+            <ul class="list-group__items small">
+              <!-- repeat: FIXED_ITEM -->
+              <li>{{FIXED_ITEM}}</li>
+              <!-- /repeat -->
+            </ul>
+          </div>
+
+          <div class="list-group">
+            <h3>Built</h3>
+            <ul class="list-group__items small">
+              <!-- repeat: BUILT_ITEM -->
+              <li>{{BUILT_ITEM}}</li>
+              <!-- /repeat -->
+            </ul>
+          </div>
+
+          <div class="list-group">
+            <h3>Cleaned up</h3>
+            <ul class="list-group__items small">
+              <!-- repeat: CLEANED_ITEM -->
+              <li>{{CLEANED_ITEM}}</li>
+              <!-- /repeat -->
+            </ul>
+          </div>
+        </div>
+
+        <div class="chart-col">
+          <h3>{{CHART_TITLE}}</h3>
+          <div class="chart">
+            <div class="chart__row">
+              <span class="label chart__label">{{CHART_ROW_1_LABEL}}</span>
+              <span class="chart__track"><span class="chart__fill chart__fill--1" style="width:{{CHART_ROW_1_WIDTH}}%"></span></span>
+              <span class="data chart__value">{{CHART_ROW_1_VALUE}}</span>
+            </div>
+            <div class="chart__row">
+              <span class="label chart__label">{{CHART_ROW_2_LABEL}}</span>
+              <span class="chart__track"><span class="chart__fill chart__fill--2" style="width:{{CHART_ROW_2_WIDTH}}%"></span></span>
+              <span class="data chart__value">{{CHART_ROW_2_VALUE}}</span>
+            </div>
+            <div class="chart__row">
+              <span class="label chart__label">{{CHART_ROW_3_LABEL}}</span>
+              <span class="chart__track"><span class="chart__fill chart__fill--3" style="width:{{CHART_ROW_3_WIDTH}}%"></span></span>
+              <span class="data chart__value">{{CHART_ROW_3_VALUE}}</span>
+            </div>
+          </div>
+          <p class="small chart__read"><span class="label">Read</span>{{CHART_READ}}</p>
+        </div>
+
+      </div>
+    </section>
+
+    <section>
+      <h2>Since the last briefing</h2>
+      <p class="small list-group__note">{{PRIOR_NOTE}}</p>
+      <ul class="list-group__items small">
+        <!-- repeat: PRIOR -->
+        <li><strong>{{PRIOR_LEAD}}</strong>{{PRIOR_REST}}</li>
+        <!-- /repeat -->
+      </ul>
+    </section>
+
+    <section>
+      <h2>Right now</h2>
+      <p>{{RIGHT_NOW_1}}</p>
+      <p>{{RIGHT_NOW_2}}</p>
+    </section>
+
+    <section>
+      <h2>Your way in</h2>
+      <p class="small">{{WAY_IN_PM}}</p>
+      <ul class="list-group__items small">
+        <!-- repeat: WAY_IN -->
+        <li>{{WAY_IN_ITEM}}</li>
+        <!-- /repeat -->
+      </ul>
+    </section>
+
+    <section>
+      <h2>Next 30 days</h2>
+      <ol class="steps small">
+        <!-- repeat: STEP -->
+        <li><strong>{{STEP_LEAD}}</strong>{{STEP_REST}}</li>
+        <!-- /repeat -->
+      </ol>
+    </section>
+
+    <section>
+      <h2>Risks to know about</h2>
+      <!-- repeat: RISK -->
+      <div class="risk">
+        <p class="risk__title">{{RISK_TITLE}}</p>
+        <p class="small risk__why">{{RISK_WHY}}</p>
+        <p class="small risk__reducer"><span class="label">Reducer</span>{{RISK_REDUCER}}</p>
+      </div>
+      <!-- /repeat -->
+    </section>
+
+    <section>
+      <h2>Glossary</h2>
+      <dl class="glossary">
+        <!-- repeat: GLOSSARY -->
+        <div class="glossary__entry">
+          <dt class="label">{{GLOSSARY_TERM}}</dt>
+          <dd class="small">{{GLOSSARY_DEFINITION}}</dd>
+        </div>
+        <!-- /repeat -->
+      </dl>
+    </section>
+
+    <section data-brf="appendix">
+      <h2>Planning records</h2>
+      <p class="small appendix__lead">{{PLAN_SUMMARY}}</p>
+      <!-- repeat: PLAN -->
+      <div class="inv">
+        <div class="inv__head"><p class="inv__title data">{{PLAN_LOCATION}}</p><span class="badge {{PLAN_BADGE_CLASS}}">{{PLAN_BADGE_TEXT}}</span></div>
+        <p class="small inv__body">{{PLAN_CONTENTS}}</p>
+        <p class="small inv__match"><span class="label">Against the code</span>{{PLAN_MATCH}}</p>
+      </div>
+      <!-- /repeat -->
+      <div class="drift">
+        <h3>Where planning and code disagree</h3>
+        <ul class="list-group__items small">
+          <!-- repeat: DRIFT -->
+          <li><strong>{{DRIFT_LEAD}}</strong>{{DRIFT_REST}}</li>
+          <!-- /repeat -->
+        </ul>
+      </div>
+    </section>
+
+    <section>
+      <h2>Code hygiene inventory</h2>
+      <p class="small appendix__lead">{{HYGIENE_SUMMARY}}</p>
+      <!-- repeat: HYG -->
+      <div class="inv">
+        <div class="inv__head"><p class="inv__title">{{HYG_CATEGORY}}</p><span class="badge {{HYG_BADGE_CLASS}}">{{HYG_BADGE_TEXT}}</span><span class="small inv__count data">{{HYG_COUNT}}</span></div>
+        <p class="small inv__body">{{HYG_DETAIL}}</p>
+      </div>
+      <!-- /repeat -->
+    </section>
+
+  </main>
+
+  <footer class="footer small">{{FOOTER_SOURCES}}</footer>
+
+</div>
+</body>
+</html>

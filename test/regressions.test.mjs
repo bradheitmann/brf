@@ -476,3 +476,17 @@ test("escaped quotes and backslashes cannot move where a CSS url() starts", () =
   }
   assert.deepEqual(checkHtml(html.replace("</main>", '<style>li::before{content:"\\2013"}a{b:url(data:x)}</style></main>'), { name }), []);
 });
+
+test("only CSS whitespace may pad a url(), not a no-break or zero-width space", () => {
+  const html = readFileSync(build({ input: EXAMPLE, out: join(tempDir(), "brf_tidewater_20261102.html"), example: true }).path, "utf8");
+  const name = "brf_tidewater_20261102.html";
+  for (const snippet of [
+    "<style>a{b:url(\\a0 data:x)}</style>",
+    "<style>a{b:url(\u00a0data:x)}</style>",
+    '<style>a{b:url("\ufeffdata:x")}</style>',
+    '<svg><rect fill="url(\u00a0#g)"/></svg>',
+  ]) {
+    assert.ok(checkHtml(html.replace("</main>", `${snippet}</main>`), { name }).length > 0, snippet);
+  }
+  assert.deepEqual(checkHtml(html.replace("</main>", '<style>a{b:url( data:x)}</style><svg><rect fill="url( #g )"/></svg></main>'), { name }), []);
+});

@@ -467,3 +467,12 @@ test("an example build still refuses a registered project's folder", () => {
   assert.equal(r.code, 2);
   assert.match(r.stderr, /inside a repository/);
 });
+
+test("escaped quotes and backslashes cannot move where a CSS url() starts", () => {
+  const html = readFileSync(build({ input: EXAMPLE, out: join(tempDir(), "brf_tidewater_20261102.html"), example: true }).path, "utf8");
+  const name = "brf_tidewater_20261102.html";
+  for (const css of ["a{b:url(\\5c data:x)}", "a{b:url(\\22 data:x)}", "a{b:url(\\000027data:x)}", 'a{content:"\\""}']) {
+    assert.ok(checkHtml(html.replace("</main>", `<style>${css}</style></main>`), { name }).length > 0, css);
+  }
+  assert.deepEqual(checkHtml(html.replace("</main>", '<style>li::before{content:"\\2013"}a{b:url(data:x)}</style></main>'), { name }), []);
+});

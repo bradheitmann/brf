@@ -335,4 +335,5 @@ width, a chart you need a legend to read.
 - Every planning location has a verdict, and the drift list names anything already built.
 - The hygiene inventory covers all ten categories and says the repository was unchanged.
 - `brf build --verify` and `brf check` are clean, and you looked at the phone and laptop
-  screenshots.
+  screenshots. If the render check was skipped (exit 3), everything else here is still true
+  and your reply says the page was not render-checked.

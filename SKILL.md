@@ -59,7 +59,9 @@ tokens or key values.
    Put `tools.gh_prefix` in front of `gh` when it is set.
 5. Planning records inventory and code hygiene inventory, exactly as PROTOCOL.md says. Use
    Mister Clean only if `tools.mister_clean` is set. All audit output goes to `work_dir`.
-6. Copy `<skill>/templates/project.html` to `<work_dir>/<repo_name>.filled.html` and fill it:
+6. Copy the project template named in the context's `templates.project.path` (the owner's own template
+   when they set one, otherwise `<skill>/templates/project.html`) to `<work_dir>/<repo_name>.filled.html`
+   and fill it:
    the card first, then In one breath, Why it matters, at most two decisions, then the rest.
 7. Build and render-check:
    `node "<skill>/bin/brf.mjs" build "<work_dir>/<repo_name>.filled.html" --out "<work_dir>/<output_name>" --verify`
@@ -82,7 +84,7 @@ tokens or key values.
    and its current brief, and gives `output_name`, `brief_number` and `work_dir`.
 2. Read each current brief: at least the card, In one breath, Why it matters and the decisions.
    Do not look at the repositories themselves.
-3. Copy `<skill>/templates/meta.html` to `<work_dir>/meta.filled.html` and fill it as
+3. Copy the meta template named in `templates.meta.path` from `context --meta` to `<work_dir>/meta.filled.html` and fill it as
    PROTOCOL.md, "The meta brief", says. Registered projects with no current brief go under
    "Missing or out of date".
 4. `node "<skill>/bin/brf.mjs" build "<work_dir>/meta.filled.html" --out "<work_dir>/<output_name>" --verify`,

@@ -66,7 +66,10 @@ path in `~/.config/brf/config.json`. On a second computer that syncs the same fo
 command; the existing registry is kept. `BRF_OUTPUT_DIR` overrides the config for one shell.
 
 Other settings in the config file: `playwright` (a path from which Playwright resolves),
-`gh_user` (the `gh` account that can read your repositories), and `extra_banned_words`.
+`gh_user` (the `gh` account that can read your repositories), `extra_banned_words`, and
+`templates_dir`: a folder with your own `project.html`, `meta.html` and `fonts.css` in your own design
+system. brf uses each file it finds there instead of its built-in one. Keeping that folder next to your
+briefs means every machine that syncs the output folder uses the same design.
 
 ## Choose which projects get briefs
 

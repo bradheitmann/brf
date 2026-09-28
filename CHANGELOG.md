@@ -4,6 +4,13 @@ brf follows semantic versioning. Each template carries its own version in its
 `<meta name="brf-template">` tag, and every brief records the brf version and template version it
 was built with.
 
+## brf 1.1.0
+
+- Owner templates: `brf init --templates-dir <folder>` (or `BRF_TEMPLATES_DIR`) points brf at your own
+  `project.html`, `meta.html` and `fonts.css`, for your own brand. Each file the folder lacks comes from the
+  built-in templates. Your templates keep their own `brf-template` tag and version.
+- Templates: project 1.0.0 and meta 1.0.0 (unchanged).
+
 ## brf 1.0.0
 
 First public release.

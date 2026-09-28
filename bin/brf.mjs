@@ -19,7 +19,7 @@ import { verify } from "../lib/verify.mjs";
 
 const HELP = `brf ${brfVersion()}: re-entry briefs, one phone-readable page per project.
 
-  brf init --output <folder> [--playwright <path>] [--gh-user <name>] [--force]
+  brf init --output <folder> [--playwright <path>] [--gh-user <name>] [--templates-dir <folder>] [--force]
       Set up the output folder (registry.json, archive/) and point this machine at it.
   brf config                       Show the settings brf resolved.
   brf context [--meta]             JSON: this repo's name, registration, file name, brief number,
@@ -133,6 +133,7 @@ async function main() {
       const next = { ...file, output_dir: out.startsWith(`${homedir()}/`) ? `~/${out.slice(homedir().length + 1)}` : out };
       if (flags.playwright) next.playwright = flags.playwright;
       if (flags["gh-user"]) next.gh_user = flags["gh-user"];
+      if (flags["templates-dir"]) next.templates_dir = flags["templates-dir"];
       writeJsonAtomic(cfg.config_path, next);
       print({ output_dir: out, registry: reg, registry_created: createdRegistry, config: cfg.config_path });
       return 0;

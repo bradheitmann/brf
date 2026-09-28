@@ -1,0 +1,88 @@
+# Draft release: builds brf for macOS (Apple silicon and Intel) and Linux (x86_64 and arm64)
+# when a version tag is pushed, and attaches the archives and checksums to a DRAFT release.
+# Nothing is published until the owner reviews the draft and publishes it by hand.
+name: release
+
+on:
+  push:
+    tags: ["v*.*.*"]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Existing tag to build, e.g. v2.0.0"
+        required: true
+
+permissions:
+  contents: read
+
+env:
+  TAG: ${{ github.event.inputs.tag || github.ref_name }}
+
+jobs:
+  draft:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          ref: ${{ env.TAG }}
+      - name: The tag matches Cargo.toml
+        run: |
+          version="$(sed -n 's/^version = "\(.*\)"/\1/p' Cargo.toml | head -1)"
+          test "v${version}" = "${TAG}" || { echo "tag ${TAG} but Cargo.toml says ${version}"; exit 1; }
+      - name: Create the draft release (or keep the existing draft)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release view "${TAG}" >/dev/null 2>&1 || \
+            gh release create "${TAG}" --draft --verify-tag --title "brf ${TAG#v}" \
+              --notes "See CHANGELOG.md. Unpack the archive for your platform and put \`brf\` on your PATH."
+
+  build:
+    needs: draft
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - target: aarch64-apple-darwin
+            os: macos-latest
+          - target: x86_64-apple-darwin
+            os: macos-latest
+          - target: x86_64-unknown-linux-musl
+            os: ubuntu-latest
+          - target: aarch64-unknown-linux-musl
+            os: ubuntu-24.04-arm
+    runs-on: ${{ matrix.os }}
+    permissions:
+      contents: write
+    env:
+      CARGO_TERM_COLOR: always
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          ref: ${{ env.TAG }}
+      - name: Toolchain
+        run: rustup target add ${{ matrix.target }}
+      - name: musl
+        if: contains(matrix.target, 'musl')
+        run: sudo apt-get update && sudo apt-get install -y musl-tools
+      - name: Build
+        run: cargo build --locked --release --target ${{ matrix.target }}
+      - name: Smoke test
+        if: matrix.target != 'x86_64-apple-darwin' || runner.arch == 'X64'
+        run: ./target/${{ matrix.target }}/release/brf version
+      - name: Package
+        id: package
+        run: |
+          name="brf-${TAG}-${{ matrix.target }}"
+          mkdir "${name}"
+          cp "target/${{ matrix.target }}/release/brf" README.md LICENSE CHANGELOG.md "${name}/"
+          tar -czf "${name}.tar.gz" "${name}"
+          if command -v sha256sum >/dev/null; then sha256sum "${name}.tar.gz" > "${name}.tar.gz.sha256"; \
+          else shasum -a 256 "${name}.tar.gz" > "${name}.tar.gz.sha256"; fi
+          echo "name=${name}" >> "${GITHUB_OUTPUT}"
+      - name: Attach to the draft
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release upload "${TAG}" "${{ steps.package.outputs.name }}.tar.gz" "${{ steps.package.outputs.name }}.tar.gz.sha256" --clobber

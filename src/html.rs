@@ -22,9 +22,7 @@ pub fn read_stamp(html: &str) -> Stamp {
     Stamp {
         brf_version: read_meta(html, "brf-version"),
         template: read_meta(html, "brf-template"),
-        brief: brief
-            .filter(|b| !b.is_empty() && b.bytes().all(|c| c.is_ascii_digit()))
-            .map(|b| b.parse::<u64>().unwrap_or(u64::MAX)),
+        brief: brief.filter(|b| !b.is_empty() && b.bytes().all(|c| c.is_ascii_digit())).map(|b| b.parse::<u64>().unwrap_or(u64::MAX)),
         repo: read_meta(html, "brf-repo"),
         date: read_meta(html, "brf-date"),
     }

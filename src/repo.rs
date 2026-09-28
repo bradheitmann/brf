@@ -9,14 +9,7 @@ use std::process::{Command, Stdio};
 use std::sync::LazyLock;
 
 pub fn git(cwd: &str, args: &[&str]) -> Option<String> {
-    let out = Command::new("git")
-        .arg("--no-optional-locks")
-        .args(args)
-        .current_dir(cwd)
-        .stdin(Stdio::null())
-        .stderr(Stdio::null())
-        .output()
-        .ok()?;
+    let out = Command::new("git").arg("--no-optional-locks").args(args).current_dir(cwd).stdin(Stdio::null()).stderr(Stdio::null()).output().ok()?;
     if !out.status.success() {
         return None;
     }

@@ -474,7 +474,11 @@ fn the_same_folder_with_a_different_remote_is_a_different_project() {
     let reg = load_registry(out.path()).unwrap();
     let r = match_checkout(
         &reg,
-        &Checkout { repo_name: "website".into(), main_path: Some(folder.path().into()), remote: Some("https://github.com/someone-else/website.git".into()) },
+        &Checkout {
+            repo_name: "website".into(),
+            main_path: Some(folder.path().into()),
+            remote: Some("https://github.com/someone-else/website.git".into()),
+        },
         &env,
     );
     assert!(r.project.is_none());
@@ -597,7 +601,10 @@ fn svg_attributes_cannot_spell_url_with_entities_or_css_escapes() {
         assert!(caught(&html, svg), "{svg}");
     }
     assert_eq!(
-        clean(&html, r#"<svg viewBox="0 0 10 10"><defs><lineargradient id="g"></lineargradient></defs><rect fill="url(#g)" transform="translate(1 2)"/></svg>"#),
+        clean(
+            &html,
+            r#"<svg viewBox="0 0 10 10"><defs><lineargradient id="g"></lineargradient></defs><rect fill="url(#g)" transform="translate(1 2)"/></svg>"#
+        ),
         Vec::<String>::new()
     );
     assert_eq!(clean(&html, r#"<p title="R&D and Q&A">x</p>"#), Vec::<String>::new());

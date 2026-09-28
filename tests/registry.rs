@@ -22,7 +22,8 @@ fn adds_a_project_only_with_the_owner_s_words_once() {
     let out = temp_dir();
     write_registry(out.path(), json!([]));
     assert!(err_text(add_project(out.path(), &entry("tidewater", ""), &env)).contains("owner asks"));
-    let first = NewEntry { everyday_name: Some("Tidewater".into()), added: Some("2026-11-02".into()), ..entry("tidewater", "Brief Tidewater weekly") };
+    let first =
+        NewEntry { everyday_name: Some("Tidewater".into()), added: Some("2026-11-02".into()), ..entry("tidewater", "Brief Tidewater weekly") };
     add_project(out.path(), &first, &env).unwrap();
     assert!(err_text(add_project(out.path(), &entry("tidewater", "again please"), &env)).contains("already registered"));
     assert!(err_text(add_project(out.path(), &entry("Bad_Name", "please add"), &env)).contains("lower-case"));
@@ -86,7 +87,11 @@ fn refuses_to_register_the_same_checkout_or_remote_twice_under_another_name() {
     let harbor = out.join("harbor");
     add_project(
         out.path(),
-        &NewEntry { local_path: Some(harbor.clone()), remote: Some(format!("git{AT}github.com:acme/harbor-log.git")), ..entry("harbor-log", "add harbor") },
+        &NewEntry {
+            local_path: Some(harbor.clone()),
+            remote: Some(format!("git{AT}github.com:acme/harbor-log.git")),
+            ..entry("harbor-log", "add harbor")
+        },
         &env,
     )
     .unwrap();
@@ -95,8 +100,12 @@ fn refuses_to_register_the_same_checkout_or_remote_twice_under_another_name() {
             .contains("already registered as \"harbor-log\"")
     );
     assert!(
-        err_text(add_project(out.path(), &NewEntry { remote: Some("https://github.com/acme/harbor-log".into()), ..entry("harbor-2", "again") }, &env))
-            .contains("already registered")
+        err_text(add_project(
+            out.path(),
+            &NewEntry { remote: Some("https://github.com/acme/harbor-log".into()), ..entry("harbor-2", "again") },
+            &env
+        ))
+        .contains("already registered")
     );
 }
 

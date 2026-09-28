@@ -25,9 +25,11 @@ fn the_shipped_example_passes_every_check() {
 
 #[test]
 fn catches_scripts_network_fetches_em_dashes_and_filler_words() {
-    let html = built()
-        .replacen("</body>", "<script>alert(1)</script><img src=\"https://example.com/x.png\"></body>", 1)
-        .replacen("Tidewater is live", "Tidewater is honestly live \u{2014} mostly", 1);
+    let html = built().replacen("</body>", "<script>alert(1)</script><img src=\"https://example.com/x.png\"></body>", 1).replacen(
+        "Tidewater is live",
+        "Tidewater is honestly live \u{2014} mostly",
+        1,
+    );
     let problems = check(&html).join("\n");
     assert!(problems.contains("script element"), "{problems}");
     assert!(problems.contains("<img> element, which brf does not allow"), "{problems}");

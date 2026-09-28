@@ -45,9 +45,11 @@ pub fn find_on_path(name: &str, path_var: &str) -> Option<String> {
 
 pub const MISTER_CLEAN_PACKAGE: &str = "@bradheitmann/mister-clean";
 
-static SHIM_MARK_RE: LazyLock<Regex> =
-    LazyLock::new(|| Regex::new(&format!(r"#{WS}*cmd-shim-target=([^\n\r\x{{2028}}\x{{2029}}]+)")).unwrap());
-static SHIM_REL_RE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r#"\$basedir/([^"'\t\n\x0B\x0C\r \x{A0}\x{1680}\x{2000}-\x{200A}\x{2028}\x{2029}\x{202F}\x{205F}\x{3000}\x{FEFF}]+\.(?:js|mjs|cjs))"#).unwrap());
+static SHIM_MARK_RE: LazyLock<Regex> = LazyLock::new(|| Regex::new(&format!(r"#{WS}*cmd-shim-target=([^\n\r\x{{2028}}\x{{2029}}]+)")).unwrap());
+static SHIM_REL_RE: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r#"\$basedir/([^"'\t\n\x0B\x0C\r \x{A0}\x{1680}\x{2000}-\x{200A}\x{2028}\x{2029}\x{202F}\x{205F}\x{3000}\x{FEFF}]+\.(?:js|mjs|cjs))"#)
+        .unwrap()
+});
 
 /// Package managers install small shell scripts that point at the real file. Follow them.
 fn shim_target(bin_path: &str) -> Option<String> {

@@ -29,9 +29,7 @@ pub fn brf_version() -> &'static str {
 }
 
 fn is_checkout(dir: &Path) -> bool {
-    ["templates/project.html", "templates/meta.html", "templates/fonts.css", "verify/verify.ts", "SKILL.md"]
-        .iter()
-        .all(|f| dir.join(f).is_file())
+    ["templates/project.html", "templates/meta.html", "templates/fonts.css", "verify/verify.ts", "SKILL.md"].iter().all(|f| dir.join(f).is_file())
 }
 
 fn checkout_root() -> Option<PathBuf> {

@@ -21,9 +21,10 @@ pub struct Env {
 
 impl Env {
     pub fn process() -> Self {
-        let mut vars: HashMap<String, String> = std::env::vars_os()
-            .filter_map(|(k, v)| Some((k.into_string().ok()?, v.into_string().ok()?)))
-            .collect();
+        let mut vars: HashMap<String, String> =
+            std::env::vars_os().filter_map(|(k, v)| Some((k.into_string().ok()?, v.into_string().ok()?))).collect();
+        // home_dir is deprecated only for its Windows behaviour; brf runs on macOS and Linux.
+        #[allow(deprecated)]
         if vars.get("HOME").is_none_or(|h| h.is_empty()) {
             if let Some(h) = std::env::home_dir() {
                 vars.insert("HOME".into(), h.to_string_lossy().into_owned());
@@ -163,7 +164,9 @@ pub fn require_output_dir(cfg: &Config) -> Result<String> {
     if !Path::new(dir).exists() {
         return Err(Error::brf(
             "OUTPUT_DIR_MISSING",
-            format!("The output folder {dir} is not there. It may be on a drive or sync service that is not available yet. Tell the owner; only the owner runs brf init."),
+            format!(
+                "The output folder {dir} is not there. It may be on a drive or sync service that is not available yet. Tell the owner; only the owner runs brf init."
+            ),
         ));
     }
     Ok(dir.clone())

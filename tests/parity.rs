@@ -35,7 +35,8 @@ fn extract_from_history() -> Option<(String, TempDir)> {
     if last.is_empty() {
         return None;
     }
-    let has = |c: &str| Command::new("git").args(["cat-file", "-e", &format!("{c}:bin/brf.mjs")]).current_dir(ROOT).status().is_ok_and(|s| s.success());
+    let has =
+        |c: &str| Command::new("git").args(["cat-file", "-e", &format!("{c}:bin/brf.mjs")]).current_dir(ROOT).status().is_ok_and(|s| s.success());
     let commit = if has(&last) { last } else { format!("{last}^") };
     if !has(&commit) {
         return None;
@@ -127,7 +128,8 @@ fn normalize(s: &str, old: &Old) -> String {
             (Regex::new(r#""generated_at": "[^"]*""#).unwrap(), r#""generated_at": "<T>""#),
         ]
     });
-    let mut out = s.replace(&format!("{}/", old.root), "<BRF>/").replace(&format!("{ROOT}/"), "<BRF>/");
+    let real = std::fs::canonicalize(&old.root).map(|p| p.to_string_lossy().into_owned()).unwrap_or_else(|_| old.root.clone());
+    let mut out = s.replace(&format!("{real}/"), "<BRF>/").replace(&format!("{}/", old.root), "<BRF>/").replace(&format!("{ROOT}/"), "<BRF>/");
     for (re, to) in rules {
         out = re.replace_all(&out, *to).into_owned();
     }
@@ -174,6 +176,9 @@ fn reset(dir: &str) {
     let _ = std::fs::remove_dir_all(dir);
     std::fs::create_dir_all(dir).unwrap();
 }
+
+/// Output lines, the output folder and the config folder of one session.
+type Session = (Vec<Out>, Vec<(String, String)>, Vec<(String, String)>);
 
 // ---------------------------------------------------------------------------------------------
 
@@ -436,7 +441,11 @@ fn parity_build_of_the_examples_and_the_templates() {
         b_args.extend(flags.iter().copied());
         let a = p.node(&a_args, work.path());
         let b = p.rust(&b_args, work.path());
-        let fix = |o: &Out| Out { code: o.code, stdout: o.stdout.replace(&format!("/b{i}/"), "/X/").replace(&format!("/a{i}/"), "/X/"), stderr: o.stderr.clone() };
+        let fix = |o: &Out| Out {
+            code: o.code,
+            stdout: o.stdout.replace(&format!("/b{i}/"), "/X/").replace(&format!("/a{i}/"), "/X/"),
+            stderr: o.stderr.clone(),
+        };
         assert_same(&format!("build case {i} {flags:?}"), &fix(&a), &fix(&b));
         assert_eq!(tree(&a_dir, old), tree(&b_dir, old), "build case {i}: written files differ");
         if i < 4 {
@@ -472,7 +481,7 @@ fn parity_of_the_whole_flow_registry_snapshot_build_deliver_check() {
     let meta_ex = root_file("examples/meta.filled.html");
 
     // One full session; its outputs, each run from a clean home and output folder at the same paths.
-    let session = |which: &str| -> (Vec<Out>, Vec<(String, String)>, Vec<(String, String)>) {
+    let session = |which: &str| -> Session {
         reset(&home);
         let _ = std::fs::remove_dir_all(&out);
         std::fs::create_dir_all(&snaps).unwrap();
@@ -535,7 +544,7 @@ fn parity_of_the_whole_flow_registry_snapshot_build_deliver_check() {
         log.push(run(&["help"], &repo));
         log.push(run(&[], &repo));
         log.push(run(&["version"], &repo));
-        log.push(run(&["context"], &base.path().to_string()));
+        log.push(run(&["context"], base.path()));
         let config = tree(&format!("{home}/cfg"), old);
         (log, tree(&out, old), config)
     };
@@ -543,11 +552,11 @@ fn parity_of_the_whole_flow_registry_snapshot_build_deliver_check() {
     let (a_log, a_out, a_cfg) = session("node");
     let (b_log, b_out, b_cfg) = session("rust");
     assert_eq!(a_log.len(), b_log.len());
+    let fixed = Regex::new(r"(\d+) current brief\(s\)").unwrap();
     for (i, (a, b)) in a_log.iter().zip(b_log.iter()).enumerate() {
         let is_folder_check = a.stdout.contains("registered project(s)");
         if is_folder_check {
             // The 2.0.0 fix: the meta brief is no longer counted as a project brief.
-            let fixed = Regex::new(r"(\d+) current brief\(s\)").unwrap();
             let n: usize = fixed.captures(&a.stdout).unwrap()[1].parse().unwrap();
             let expected = fixed.replace(&a.stdout, format!("{} current project brief(s)", n - 1).as_str()).into_owned();
             assert_eq!(b.code, a.code, "step {i}: folder check exit code");

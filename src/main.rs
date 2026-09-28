@@ -388,7 +388,10 @@ fn build_command(args: &Args, cfg: &Config, env: &Env, log: &mut dyn FnMut(&str)
         }
         if let Some(od) = cfg.output_dir.as_deref().filter(|d| Path::new(d).exists()) {
             if is_inside(path, od) {
-                return Err(Error::brf("INSIDE_OUTPUT", format!("The {what} {path} is inside the output folder. Build in the work folder, then brf deliver.")));
+                return Err(Error::brf(
+                    "INSIDE_OUTPUT",
+                    format!("The {what} {path} is inside the output folder. Build in the work folder, then brf deliver."),
+                ));
             }
         }
     }

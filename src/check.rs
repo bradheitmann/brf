@@ -74,11 +74,7 @@ static IDENTIFIERS: LazyLock<Vec<Identifier>> = LazyLock::new(|| {
         id("ticket or task id", r"(?-u:\b)[A-Z][A-Z0-9]+-(?:[0-9]+|[A-Z0-9][A-Z0-9-]{2,})(?-u:\b)", any),
         id("commit hash", r"(?-u:\b)[0-9a-f]{7,40}(?-u:\b)", hash_like),
         id("pull request or issue number", r"#[0-9]{1,5}(?-u:\b)", number_like),
-        id(
-            "file path",
-            r"(?-u:\b)[A-Za-z0-9_.-]+/[A-Za-z0-9_./-]*\.(?:md|json|ts|tsx|js|mjs|cjs|py|sh|ya?ml|toml|rs|go|html|css)(?-u:\b)",
-            any,
-        ),
+        id("file path", r"(?-u:\b)[A-Za-z0-9_.-]+/[A-Za-z0-9_./-]*\.(?:md|json|ts|tsx|js|mjs|cjs|py|sh|ya?ml|toml|rs|go|html|css)(?-u:\b)", any),
         id("version string", r"(?-u:\b)v?[0-9]+\.[0-9]+\.[0-9]+(?-u:\b)", any),
     ]
 });
@@ -94,7 +90,11 @@ pub fn stamp_mismatch(stamp: &Stamp, parsed: Option<&Parsed>) -> Vec<String> {
         out.push(format!("is a {kind} brief but named as a {} brief", parsed.kind.as_str()));
     }
     if parsed.kind == Kind::Project && stamp.repo.as_deref() != parsed.repo.as_deref() {
-        out.push(format!("is stamped for \"{}\" but named for \"{}\"", stamp.repo.as_deref().unwrap_or("null"), parsed.repo.as_deref().unwrap_or("")));
+        out.push(format!(
+            "is stamped for \"{}\" but named for \"{}\"",
+            stamp.repo.as_deref().unwrap_or("null"),
+            parsed.repo.as_deref().unwrap_or("")
+        ));
     }
     let named = dashed_date(&parsed.date);
     if let Some(date) = stamp.date.as_deref().filter(|d| !d.is_empty()) {
@@ -304,10 +304,71 @@ pub fn scan_markup(html: &str) -> (Vec<Tag>, Vec<String>) {
 }
 
 const HTML_TAGS: &[&str] = &[
-    "html", "head", "body", "meta", "title", "style", "header", "footer", "main", "section", "article", "aside", "nav", "div", "span", "p", "h1",
-    "h2", "h3", "h4", "h5", "h6", "ul", "ol", "li", "dl", "dt", "dd", "table", "thead", "tbody", "tfoot", "tr", "th", "td", "caption", "colgroup",
-    "col", "strong", "em", "b", "i", "small", "sub", "sup", "abbr", "time", "code", "kbd", "pre", "blockquote", "mark", "s", "u", "br", "wbr", "hr",
-    "figure", "figcaption", "details", "summary", "a", "svg", "input", "label",
+    "html",
+    "head",
+    "body",
+    "meta",
+    "title",
+    "style",
+    "header",
+    "footer",
+    "main",
+    "section",
+    "article",
+    "aside",
+    "nav",
+    "div",
+    "span",
+    "p",
+    "h1",
+    "h2",
+    "h3",
+    "h4",
+    "h5",
+    "h6",
+    "ul",
+    "ol",
+    "li",
+    "dl",
+    "dt",
+    "dd",
+    "table",
+    "thead",
+    "tbody",
+    "tfoot",
+    "tr",
+    "th",
+    "td",
+    "caption",
+    "colgroup",
+    "col",
+    "strong",
+    "em",
+    "b",
+    "i",
+    "small",
+    "sub",
+    "sup",
+    "abbr",
+    "time",
+    "code",
+    "kbd",
+    "pre",
+    "blockquote",
+    "mark",
+    "s",
+    "u",
+    "br",
+    "wbr",
+    "hr",
+    "figure",
+    "figcaption",
+    "details",
+    "summary",
+    "a",
+    "svg",
+    "input",
+    "label",
 ];
 
 fn html_tag_allowed(name: &str) -> bool {
@@ -326,8 +387,24 @@ fn control_attrs(tag: &str) -> Option<&'static [&'static str]> {
 }
 
 const SVG_TAGS: [&str; 18] = [
-    "svg", "g", "path", "circle", "ellipse", "rect", "line", "polyline", "polygon", "title", "desc", "defs", "lineargradient", "radialgradient",
-    "stop", "clippath", "text", "tspan",
+    "svg",
+    "g",
+    "path",
+    "circle",
+    "ellipse",
+    "rect",
+    "line",
+    "polyline",
+    "polygon",
+    "title",
+    "desc",
+    "defs",
+    "lineargradient",
+    "radialgradient",
+    "stop",
+    "clippath",
+    "text",
+    "tspan",
 ];
 const GLOBAL_ATTRS: [&str; 9] = ["class", "id", "lang", "dir", "title", "role", "hidden", "style", "translate"];
 
@@ -347,12 +424,66 @@ fn tag_attrs(tag: &str) -> &'static [&'static str] {
 }
 
 const SVG_ATTRS: &[&str] = &[
-    "xmlns", "xmlns:xlink", "viewbox", "width", "height", "fill", "stroke", "stroke-width", "stroke-linecap", "stroke-linejoin", "stroke-miterlimit",
-    "stroke-dasharray", "stroke-dashoffset", "stroke-opacity", "fill-opacity", "fill-rule", "clip-rule", "clip-path", "d", "x", "y", "x1", "y1",
-    "x2", "y2", "cx", "cy", "r", "rx", "ry", "fx", "fy", "dx", "dy", "points", "transform", "opacity", "offset", "stop-color", "stop-opacity",
-    "gradientunits", "gradienttransform", "spreadmethod", "clippathunits", "font-family", "font-size", "font-weight", "text-anchor",
-    "dominant-baseline", "letter-spacing", "preserveaspectratio", "version", "focusable", "shape-rendering", "vector-effect", "paint-order",
-    "xml:space", "display", "visibility", "color",
+    "xmlns",
+    "xmlns:xlink",
+    "viewbox",
+    "width",
+    "height",
+    "fill",
+    "stroke",
+    "stroke-width",
+    "stroke-linecap",
+    "stroke-linejoin",
+    "stroke-miterlimit",
+    "stroke-dasharray",
+    "stroke-dashoffset",
+    "stroke-opacity",
+    "fill-opacity",
+    "fill-rule",
+    "clip-rule",
+    "clip-path",
+    "d",
+    "x",
+    "y",
+    "x1",
+    "y1",
+    "x2",
+    "y2",
+    "cx",
+    "cy",
+    "r",
+    "rx",
+    "ry",
+    "fx",
+    "fy",
+    "dx",
+    "dy",
+    "points",
+    "transform",
+    "opacity",
+    "offset",
+    "stop-color",
+    "stop-opacity",
+    "gradientunits",
+    "gradienttransform",
+    "spreadmethod",
+    "clippathunits",
+    "font-family",
+    "font-size",
+    "font-weight",
+    "text-anchor",
+    "dominant-baseline",
+    "letter-spacing",
+    "preserveaspectratio",
+    "version",
+    "focusable",
+    "shape-rendering",
+    "vector-effect",
+    "paint-order",
+    "xml:space",
+    "display",
+    "visibility",
+    "color",
 ];
 
 fn svg_attr_allowed(name: &str) -> bool {
@@ -362,8 +493,7 @@ fn svg_attr_allowed(name: &str) -> bool {
 static ARIA_DATA_RE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"^(?:aria|data)-[a-z0-9-]+$").unwrap());
 static NAMED_ENTITY_RE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"&[a-zA-Z][a-zA-Z0-9]*;").unwrap());
 static STYLE_ATTR_RE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"^[a-zA-Z0-9\t\n\x0C\r :;.%#,-]*$").unwrap());
-static LINK_RE: LazyLock<Regex> =
-    LazyLock::new(|| Regex::new(&format!(r"^(?:(?i-u:https?)://{NOT_WS}|(?i-u:mailto):{NOT_WS}|#)")).unwrap());
+static LINK_RE: LazyLock<Regex> = LazyLock::new(|| Regex::new(&format!(r"^(?:(?i-u:https?)://{NOT_WS}|(?i-u:mailto):{NOT_WS}|#)")).unwrap());
 static HREF_ENTITY_RE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"&(?:#|(?i-u:[a-z])+;)").unwrap());
 static URL_CALL_RE: LazyLock<Regex> = LazyLock::new(|| Regex::new(&format!(r"(?i-u:url){WS}*\(")).unwrap());
 static URL_FRAGMENT_ONLY_RE: LazyLock<Regex> =
@@ -481,7 +611,11 @@ pub fn allowlist_problems(tags: &[Tag], styles: &[String]) -> Vec<String> {
     for tag in tags {
         let allowed = if tag.foreign { SVG_TAGS.contains(&tag.name.as_str()) } else { html_tag_allowed(&tag.name) };
         if !allowed {
-            found.add(if tag.name == "script" { "has a script element".to_string() } else { format!("uses a <{}> element, which brf does not allow", tag.name) });
+            found.add(if tag.name == "script" {
+                "has a script element".to_string()
+            } else {
+                format!("uses a <{}> element, which brf does not allow", tag.name)
+            });
             continue;
         }
         let svgish = tag.foreign || tag.name == "svg";
@@ -689,16 +823,16 @@ pub fn check_folder(out_dir: &str, banned_extra: &[String], stale_days: i64, tod
             notes.push(format!("{repo}: registered, no current brief"));
         }
     }
-    let unnamed: Vec<String> = list_files(out_dir).into_iter().filter(|f| f.location == Location::Archive && f.parsed.is_none()).map(|f| f.name).collect();
+    let unnamed: Vec<String> =
+        list_files(out_dir).into_iter().filter(|f| f.location == Location::Archive && f.parsed.is_none()).map(|f| f.name).collect();
     if !unnamed.is_empty() {
-        notes.push(format!("{} archive file(s) do not follow the naming: {}", unnamed.len(), unnamed.iter().take(5).cloned().collect::<Vec<_>>().join(", ")));
+        notes.push(format!(
+            "{} archive file(s) do not follow the naming: {}",
+            unnamed.len(),
+            unnamed.iter().take(5).cloned().collect::<Vec<_>>().join(", ")
+        ));
     }
-    Ok(FolderReport {
-        problems,
-        notes,
-        current_count: current.iter().filter(|(k, _)| k != META_KEY).count(),
-        registered_count: registered.len(),
-    })
+    Ok(FolderReport { problems, notes, current_count: current.iter().filter(|(k, _)| k != META_KEY).count(), registered_count: registered.len() })
 }
 
 /// The folder check with today's date and the protocol's 14-day staleness.

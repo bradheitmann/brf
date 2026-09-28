@@ -119,8 +119,8 @@ pub struct Comparison {
 pub fn compare_snapshot(before_path: &str, cwd: &str) -> Result<Comparison> {
     let text = std::fs::read_to_string(before_path)
         .map_err(|e| Error::brf("NO_SNAPSHOT", format!("Cannot read the earlier snapshot {before_path}: {}", io_at(e, "open", before_path))))?;
-    let before: Value = serde_json::from_str(&text)
-        .map_err(|e| Error::brf("NO_SNAPSHOT", format!("Cannot read the earlier snapshot {before_path}: {e}")))?;
+    let before: Value =
+        serde_json::from_str(&text).map_err(|e| Error::brf("NO_SNAPSHOT", format!("Cannot read the earlier snapshot {before_path}: {e}")))?;
     let truthy = |v: Option<&Value>| match v {
         None | Some(Value::Null) | Some(Value::Bool(false)) => false,
         Some(Value::String(s)) => !s.is_empty(),
@@ -142,11 +142,8 @@ pub fn compare_snapshot(before_path: &str, cwd: &str) -> Result<Comparison> {
     let empty = Map::new();
     let after_digests = after["digests"].as_object().unwrap_or(&empty);
     let before_digests = before.get("digests").and_then(Value::as_object);
-    let changed: Vec<String> = after_digests
-        .iter()
-        .filter(|(k, v)| before_digests.and_then(|b| b.get(k.as_str())) != Some(*v))
-        .map(|(k, _)| k.clone())
-        .collect();
+    let changed: Vec<String> =
+        after_digests.iter().filter(|(k, v)| before_digests.and_then(|b| b.get(k.as_str())) != Some(*v)).map(|(k, _)| k.clone()).collect();
     let same = changed.is_empty() && before.get("digest") == after.get("digest");
     Ok(Comparison { same, changed, before, after })
 }

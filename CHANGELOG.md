@@ -4,6 +4,24 @@ brf follows semantic versioning. Each template carries its own version in its
 `<meta name="brf-template">` tag, and every brief records the brf version and template version it
 was built with.
 
+## brf 2.0.0
+
+- brf is now one Rust binary, `brf`. Install it with `cargo install --path .` from a clone, or
+  download a prebuilt binary for macOS (Apple silicon or Intel) or Linux. Node is no longer
+  needed to write, build, check or deliver a brief. The major version changes because the way
+  brf is installed and run changed; the subcommands, flags, exit codes, messages and file formats
+  are those of 1.2.0, apart from the fix below.
+- The built-in templates and fonts are inside the binary. Run from a clone, brf uses the clone's
+  `templates/`; installed on its own, it unpacks them once to `<cache>/assets/<version>/`, and
+  `brf context` names that path for the agent to copy.
+- The render check (`brf build --verify`) is a strict TypeScript script, `verify/verify.ts`, that
+  the binary runs with Node 22.18 or newer (or Bun). It finds Playwright with Chromium exactly as
+  before and exits 3 when either is missing.
+- Fix: `brf check` on the output folder counted the meta brief as a project brief, so two project
+  briefs and a meta brief read "3 current brief(s)". It now counts project briefs only and says
+  "2 current project brief(s)"; `--json` reports the same number as `current_count`.
+- Templates: project 2.0.0 and meta 2.0.0 (unchanged).
+
 ## brf 1.2.0
 
 - New content model: big picture first, visual, far fewer words. The main view (everything outside

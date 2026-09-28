@@ -33,12 +33,18 @@ fictional portfolio.
 
 ## Install
 
-brf is an agent skill plus a small command line with no dependencies. You need Node 20 or newer
-and git.
+brf is an agent skill plus a small command line, `brf`: one program, written in Rust, with the
+templates and fonts built in. You need git. Clone the kit (the skill reads its protocol and
+examples from the clone), then install `brf` one of two ways:
 
 ```sh
 git clone https://github.com/bradheitmann/brf.git ~/brf
+cargo install --locked --path ~/brf        # builds brf and puts it in ~/.cargo/bin
 ```
+
+or download the prebuilt archive for your computer (macOS Apple silicon or Intel, Linux x86_64 or
+arm64) from the releases page, unpack it, and put `brf` on your `PATH`. `brf version` should print
+`brf 2.0.0` or newer. After a `git pull`, run the `cargo install` line again.
 
 Make `/brf` available to your agent by linking the clone into its skills folder. For Claude Code:
 
@@ -50,8 +56,9 @@ Agents that do not load skills can use `PROMPT.md` instead.
 
 Optional:
 
-- **Playwright with Chromium** for the render check at five screen widths. Install it, then tell
-  brf where it is when you run `init` (below):
+- **Playwright with Chromium** for the render check at five screen widths. The check is a small
+  TypeScript script that `brf` runs with Node 22.18 or newer, or Bun, so one of those is needed
+  too. Install Playwright, then tell brf where it is when you run `init` (below):
   `npm i -g playwright && npx playwright install chromium`, then add
   `--playwright "$(npm root -g)/playwright"` to `brf init`.
 - **Mister Clean** for the hygiene audit (`npm i -g @bradheitmann/mister-clean`). Without it the
@@ -64,7 +71,7 @@ brf never picks the folder for you. Choose one you can open on your phone, such 
 cloud-drive folder, then run:
 
 ```sh
-node ~/brf/bin/brf.mjs init --output "<your folder>"
+brf init --output "<your folder>"
 ```
 
 This creates the folder with an empty `registry.json` and an `archive/` folder, and records the
@@ -85,7 +92,7 @@ brief does not register one. To add a project, say so explicitly from inside tha
 the agent records your words:
 
 ```sh
-node ~/brf/bin/brf.mjs register --reason "Brief this one every Monday" --everyday-name "Tidewater"
+brf register --reason "Brief this one every Monday" --everyday-name "Tidewater"
 ```
 
 Each entry records the project's folder and remote. If a project moves or its repository is
@@ -126,7 +133,12 @@ versioning on their own; see `CHANGELOG.md`.
 | `brf check [--file <brief>]` | Check one brief, or the whole folder, against the protocol |
 | `brf version` | Print the brf and template versions |
 
-Run it as `node ~/brf/bin/brf.mjs <command>`, or put `bin/brf.mjs` on your `PATH` as `brf`.
+Exit codes: 0 done, 1 problems found (a check, a changed snapshot, a failed render check), 2 a
+refusal or usage error, with the reason on stderr, 3 the render check was skipped.
+
+`brf` carries its templates. Run from a clone (`target/release/brf`), it uses the clone's
+`templates/`; installed on its own, it unpacks them once to `~/.cache/brf/assets/<version>/`
+(or under `$XDG_CACHE_HOME`), and `brf context` gives the agent that path.
 
 ## Privacy
 
@@ -136,8 +148,21 @@ registry and your settings stay in your output folder and your config file, neve
 ## Development
 
 ```sh
-node --test test/*.test.mjs
+npm install --prefix verify     # TypeScript, for the type check of verify/verify.ts
+                                # (with pnpm: pnpm install --dir verify --ignore-workspace)
+cargo test
+cargo build --release           # target/release/brf
 ```
+
+`cargo test` runs the Rust tests, type-checks `verify/verify.ts` with `tsc --noEmit` in strict
+mode, and runs a parity test that compares `brf` with brf 1.2.0, the earlier Node command line,
+taken from this repository's git history. The parity test needs `node`; without it the test says
+it skipped (set `BRF_PARITY_REQUIRED=1` to make that a failure, as CI does). To compare both on a
+copy of your own brief folder:
+`BRF_PARITY_REAL_DIR=<folder> cargo test --test parity -- --ignored`.
+
+Pushing a version tag (`v2.0.0`) builds macOS and Linux archives and attaches them to a draft
+release; see `.github/workflows/release.yml`.
 
 Protocol and voice rules: `PROTOCOL.md`. Agent procedure: `SKILL.md`. Changes: `CHANGELOG.md`.
 

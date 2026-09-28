@@ -57,7 +57,8 @@ services or network configuration, and follow any agent rules that computer's re
 | `templates/fonts.css` | The embedded faces; the build injects it |
 | `examples/tidewater.filled.html` | A filled project brief about a fictional project. The tone and length standard. |
 | `examples/meta.filled.html` | A filled meta brief for the same fictional portfolio |
-| `bin/brf.mjs` | The command line: context, register, snapshot, build, deliver, check |
+| `src/` | The `brf` command line, in Rust: init, context, register, snapshot, build, deliver, check |
+| `verify/verify.ts` | The render check behind `brf build --verify`, in TypeScript |
 
 ## The job, in order
 
@@ -333,11 +334,12 @@ briefs in the output folder only, never from a fresh look at the repositories. `
 
 `brf build --verify` renders the page with JavaScript off at 360, 390, 768, 1024 and 1440 wide,
 screenshots each, and fails on horizontal overflow, a missing or extra top heading, invisible
-elements, text under 12px, or any request that leaves the file. It needs Playwright with
+elements, text under 12px, or any request that leaves the file. brf runs the check as a
+TypeScript script with Node 22.18 or newer, or Bun, and the script needs Playwright with
 Chromium; brf finds it through the config file's `playwright` path, `BRF_PLAYWRIGHT`, or a
-`node_modules` above the working folder, or a global npm folder. If none is found it says the
-proof was skipped and exits 3, and the reply to the owner must say so too. The owner sets the
-path once with `brf init --output <folder> --playwright "$(npm root -g)/playwright"`.
+`node_modules` above the working folder, or a global npm folder. If Node, Bun or Playwright is
+missing it says the proof was skipped and exits 3, and the reply to the owner must say so too.
+The owner sets the path once with `brf init --output <folder> --playwright "$(npm root -g)/playwright"`.
 
 Read the screenshots, not only the numbers. What the numbers cannot catch: a heading doing
 another heading's job, two type sizes colliding in one sentence, a table that crushes at phone

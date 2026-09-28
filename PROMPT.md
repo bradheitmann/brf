@@ -8,8 +8,8 @@ the folder where brf is cloned.
 Write my re-entry brief for this project with brf, the kit in `<brf>`.
 
 Read `<brf>/PROTOCOL.md` in full first; it is binding. Then follow the procedure in
-`<brf>/SKILL.md`, using `node <brf>/bin/brf.mjs` as the brf command. Start with
-`node <brf>/bin/brf.mjs context`. If it says the project is not registered, stop and tell me; I
+`<brf>/SKILL.md`, using `brf` (the brf program on the PATH) as the brf command. Start with
+`brf context`. If it says the project is not registered, stop and tell me; I
 add projects myself.
 
 I read these on my phone, on a morning walk, not fully awake, as if I had just come back from a

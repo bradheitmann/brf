@@ -10,20 +10,26 @@ HTML file with its fonts inside it and no scripts, so it opens offline from any 
 
 ## What a brief contains
 
-1. **The Project Card:** what it is, who depends on it, stage, health, momentum, who is holding it
-   up, how much of your time it needs, the cost of doing nothing, and an attention score from 1
-   to 5. The same closed vocabulary on every project, so briefs compare at a glance.
-2. **In one breath**, **why it matters** and what it unlocks for your other projects.
-3. **At most two decisions**, each a real choice with a recommendation.
-4. While you were away, since the last brief, right now, your way in, the next 30 days, risks,
-   and a short glossary.
-5. Two appendices for the project manager: a **planning records inventory** that shows where
-   plans live and whether they match what is built, and a read-only **code hygiene inventory**.
+Big picture first, in about 180 words on one screen:
+
+1. **Status strip:** stage, health and momentum from the same closed vocabulary on every project,
+   and an attention dial from 1 to 5 with one line of reason.
+2. **The big idea:** what the project is for and why it matters, in a sentence or two.
+3. **What it unlocks**, naming your other projects, and **related projects** as chips.
+4. **What's missing to be functional:** a short checklist with a meter ("3 of 5 in place").
+5. **One decision** at most, with a recommended answer and the time it needs.
+6. **Activity:** commits per week for the last eight weeks.
+
+Collapsed below: what changed since the last brief, risks, and two appendices for the project
+manager: a **planning records inventory** that shows where plans live and whether they match what
+is built, and a read-only **code hygiene inventory**.
 
 The **meta brief** is one page across all your projects: where to start today, every decision
-waiting on you, and the order to give projects attention, with what each unlocks for the others.
+waiting on you, every project as a ranked card, and how the projects feed each other.
 
-`examples/tidewater.filled.html` is a complete example about a fictional project.
+Both switch between light and dark with one button and no script.
+`examples/tidewater.filled.html` and `examples/meta.filled.html` are complete examples about a
+fictional portfolio.
 
 ## Install
 
@@ -68,7 +74,8 @@ command; the existing registry is kept. `BRF_OUTPUT_DIR` overrides the config fo
 Other settings in the config file: `playwright` (a path from which Playwright resolves),
 `gh_user` (the `gh` account that can read your repositories), `extra_banned_words`, and
 `templates_dir`: a folder with your own `project.html`, `meta.html` and `fonts.css` in your own design
-system. brf uses each file it finds there instead of its built-in one. Keeping that folder next to your
+system. brf uses each file it finds there instead of its built-in one. Your templates must carry the
+same slots and repeat blocks as the built-in ones of the same major version. Keeping that folder next to your
 briefs means every machine that syncs the output folder uses the same design.
 
 ## Choose which projects get briefs
@@ -129,7 +136,7 @@ registry and your settings stay in your output folder and your config file, neve
 ## Development
 
 ```sh
-npm test
+node --test test/*.test.mjs
 ```
 
 Protocol and voice rules: `PROTOCOL.md`. Agent procedure: `SKILL.md`. Changes: `CHANGELOG.md`.

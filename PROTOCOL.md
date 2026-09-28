@@ -12,22 +12,21 @@ the repository.
 
 The owner runs many projects. They open the brief on a phone, often first thing in the morning
 on a walk, before they are fully awake. Write for a capable executive **parachuting into the
-project for the first time**, just back from a long vacation, now in charge of it. They remember
-the project's name and little else.
+project**, just back from a long vacation. They remember the project's name and little else, and
+they want the big picture in one screen: what it is for, what it unlocks, what is missing before it
+works, and whether anything needs them today.
 
-- **No machine-assigned names in the body.** No task, story, slice or ticket ids, no codenames
+- **Picture first, few words.** The main view is a status strip, a big idea, short lists, a meter and
+  a chart. Everything else is collapsed. If a sentence can be a checklist item or a chip, make it one.
+- **No machine-assigned names in the main view.** No task, story, slice or ticket ids, no codenames
   they would have to decode, no commit hashes, pull-request numbers, file paths or version
   strings. Call each thing by what it does: "the check that stops agents skipping reviews," not
-  "enforce-no-verify-gate." Identifiers may appear only in the two appendices and the footer,
-  always beside a plain description, because the project manager uses them there.
-- **Make it an invitation.** The reader should finish wanting to learn more and confident that
-  the project manager (the agent that runs this repository day to day) will take care of them.
-  "Your way in" says what the project manager will do for them on day one.
-- **Say why it matters.** Every brief says why the project exists, what it makes possible in
-  general, and what it unlocks for the owner's other projects, naming them by their everyday
-  names from the registry.
-- **Gentle, warm-up reading.** Short sentences, one idea each, no acronyms without their plain
-  meaning, nothing that needs a second read.
+  "enforce-no-verify-gate." Identifiers may appear only in the two appendices (planning records and
+  code hygiene) and the footer, always beside a plain description.
+- **Say why it matters.** The big idea says why the project exists; "What it unlocks" and "Related
+  projects" name the owner's other projects by their everyday names from the registry.
+- **Gentle reading.** Short sentences, one idea each, no acronyms without their plain meaning,
+  nothing that needs a second read.
 
 ## The registry
 
@@ -41,6 +40,11 @@ same project. A checkout whose remote differs from the entry's, even at the reco
 not: `brf context` stops, and `brf build` and `brf deliver` refuse when run inside it. `brf context` stops on an unregistered repository, and `brf build` and
 `brf deliver` refuse one.
 
+**Projects on another computer.** When a registered project lives on another of the owner's
+computers, read it there with read-only commands only (the same list as in `SKILL.md`), bring the
+facts back, and build and deliver on this computer. Never change another computer's settings,
+services or network configuration, and follow any agent rules that computer's repositories carry.
+
 ## What is in brf
 
 | Path | What it is |
@@ -51,7 +55,8 @@ not: `brf context` stops, and `brf build` and `brf deliver` refuse when run insi
 | `templates/project.html` | The project brief, with `{{SLOTS}}` and repeat blocks |
 | `templates/meta.html` | The meta brief across all registered projects |
 | `templates/fonts.css` | The embedded faces; the build injects it |
-| `examples/tidewater.filled.html` | A finished, filled example about a fictional project. The tone standard. |
+| `examples/tidewater.filled.html` | A filled project brief about a fictional project. The tone and length standard. |
+| `examples/meta.filled.html` | A filled meta brief for the same fictional portfolio |
 | `bin/brf.mjs` | The command line: context, register, snapshot, build, deliver, check |
 
 ## The job, in order
@@ -64,8 +69,8 @@ not: `brf context` stops, and `brf build` and `brf deliver` refuse when run insi
    the current branch, the content of staged, unstaged and untracked changes, ignored paths,
    every ref, the stash list, the worktree list, and HEAD's reflog (so a stash-and-pop or a
    switch away and back shows up as `"changed": ["reflog"]`).
-3. **Read the earlier briefs.** The newest is the baseline: its decisions, next steps and risks
-   must each be accounted for in "Since the last briefing."
+3. **Read the earlier briefs.** The newest is the baseline: its decision, its missing items and its
+   risks must each be accounted for in "What changed since the last brief."
 4. **Ground the facts.** Read, in this order: git log since the baseline's date, branches,
    worktrees and stashes; every handoff (`HANDOFF*.md`, `CURRENT*.md`, `CURRENT-STATE.md`,
    `docs/handoffs/`, `docs/agent/*/`); every management rollup (`*rollup*`); decision logs; the
@@ -76,52 +81,79 @@ not: `brf context` stops, and `brf build` and `brf deliver` refuse when run insi
    disagreement goes in the brief.
 5. **Inventory the planning records** ("Planning records inventory" below).
 6. **Inventory code hygiene** ("Code hygiene inventory" below). Read-only.
-7. **Fill the Project Card first.** It is the common language across every project. Use only the
-   closed vocabulary below.
-8. **Write "In one breath"** and **"Why it matters"**, naming other registered projects from the
-   context's `portfolio` list (read their current briefs if you need to).
-9. **Write at most two decisions**, each a real choice for the owner. Anything that is not the
-   owner's call goes in "Next 30 days."
-10. **Fill the rest:** while you were away, since the last briefing, right now, your way in,
-    next 30 days, risks, glossary, the two inventories, footer.
-11. **Build and verify.** `brf build <filled> --out <work_dir>/<output_name> --verify`. Read the
+7. **Count the activity.** Commits per week for the last eight weeks, oldest first, on all
+   branches: `git --no-optional-locks log --all --since=<8 weeks ago> --format=%cs` and count by
+   the Monday of each week. Weeks with none are 0.
+8. **Fill the main view** ("The main view" below): the status strip first, then the big idea, what
+   it unlocks, what is missing, related projects, at most one decision, activity. Name other
+   registered projects from the context's `portfolio` list (read their current briefs if you need to).
+9. **Fill the collapsed sections:** what changed since the last brief, risks, the two
+   inventories, the footer.
+10. **Build and verify.** `brf build <filled> --out <work_dir>/<output_name> --verify`. Read the
     390 and 1440 screenshots with an image viewer tool, never by opening the owner's browser.
-    Fix what you see and rebuild until it is clean.
-12. **Check.** `brf check --file <built>`. Fix every problem.
-13. **Take the after snapshot.** `brf snapshot --compare <work_dir>/before.json` must say
+    Fix what you see and rebuild until it is clean. The build prints the main view's word count.
+11. **Check.** `brf check --file <built>`. Fix every problem.
+12. **Take the after snapshot.** `brf snapshot --compare <work_dir>/before.json` must say
     `"same": true`. If it does not, stop and tell the owner what changed; do not deliver.
-14. **Deliver.** `brf deliver <built>`. It files the project's previous brief in `archive/`.
-15. **Reply** with the delivered path, the Project Card as a plain list, the first decision, and
-    anything you could not verify.
+13. **Deliver.** `brf deliver <built>`. It files the project's previous brief in `archive/`.
+14. **Reply** with the delivered path, the status strip and the big idea as a plain list, the
+    decision if there is one, and anything you could not verify.
 
-## The Project Card, closed vocabulary
+## The main view
+
+Everything outside the collapsed sections. About 180 words in all, labels included; `brf build`
+prints the count. In this order:
+
+| Block | What goes in it |
+|---|---|
+| Header | Logo (optional), the project's everyday name, the date, the brief number (the build writes it) |
+| Status strip | Stage, Health and Momentum as badges from the closed lists below; the attention dial, 1 to 5, with one line of reason |
+| The big idea | One or two sentences: what the project is for and why it matters |
+| What it unlocks | Up to three short items: what it makes possible, and for whom, naming registered projects where true |
+| What's missing to be functional | A checklist of up to five things that must exist for the project to do its job, each In place or Missing, and the count drawn as a meter ("3 of 5 in place"). When all are in place, list the ones that matter most, all In place. |
+| Related projects | Up to five chips: a registered project and its relation in a word or two (feeds, depends on, shares, replaces, uses, checked by) |
+| One decision | At most one: the question, the answer you recommend with its risk, and the owner's time. Leave the block out when nothing needs the owner. |
+| Activity | Commits per week for the last eight weeks as bars (from git), and one line on what the shape means |
+
+### Closed vocabulary
 
 | Field | Allowed values | Notes |
 |---|---|---|
-| What it is | one plain sentence | a stranger could read it aloud; name who uses it, including AI agents if they do |
-| Who depends on it | named people, teams, projects | the stakes |
-| Stage | Idea · Building · Usable · Live · Maintaining · Winding down | badge = the latest rung reached; the sentence after it is the qualifier |
-| Health | Healthy · Needs attention · Stuck · On fire | plus one sentence saying why |
-| Momentum, last 3 weeks | Fast · Steady · Slow · Stopped | plus the plain reason, e.g. "A lot was finished. None of it went out." |
-| Bottleneck | You · Team · Outside party · None | who is holding it |
-| Your time needed | None · 5 min · 30 min · Half a day | and by when |
-| If you do nothing | one sentence | the cost of neglect; this is the prioritisation signal |
-| Attention | 1 to 5 | derived from the rows above; one line of reason that states the trade |
+| Stage | Idea · Building · Usable · Live · Maintaining · Winding down | the latest rung reached |
+| Health | Healthy · Needs attention · Stuck · On fire | |
+| Momentum, last 3 weeks | Fast · Steady · Slow · Stopped | |
+| Attention | 1 to 5 | one line of reason that states the trade |
 
-The dial is not a mood. A high cost of neglect and many dependants push it up; a large time
-demand on the reader pushes it down. Say the trade in the reason line, e.g. "Nothing is on fire,
-and thirty minutes of your time publishes three weeks of finished work."
+The dial is not a mood. A high cost of neglect and many dependants push it up; a large demand on
+the reader's time pushes it down. Say the trade in the reason line, e.g. "Nothing is on fire, and
+five minutes of your time fixes the one error that could hurt paddlers."
+
+The checklist is the answer to "what would it take for this to work?", not a task list. Each item
+is a capability or a thing that exists ("Tide tables for next year"), in a few words, in the order
+it will be done. The meter and the count come from the same items.
+
+### The collapsed sections
+
+Each is a closed `<details>` block the reader opens only if they want more:
+
+- **What changed since the last brief.** Every decision, missing item and risk from the prior brief
+  and what happened to it (done, partly done, dropped, still waiting), plus anything that shipped.
+  One sentence each, at most eight. For a first brief: "First brief for this project." and one item
+  naming what the reader should know first. If a prior claim was wrong, say so.
+- **Risks.** Two to four, each as the risk in one line and what would reduce it (and whether that
+  exists yet).
+- **Planning records** (an appendix; identifiers allowed). See the inventory below.
+- **Code hygiene inventory** (an appendix; identifiers allowed). See the inventory below.
 
 ## Voice, binding
 
 - Plain English a sharp person from another company understands cold. Every project-private
-  term is avoided, replaced by its plain meaning, or defined inline in six words or fewer the
-  first time. The glossary is for the six you could not avoid, no more.
+  term is avoided or replaced by its plain meaning.
 - Outcomes, not mechanics. "Agents can no longer be handed slide-deck work," not "pptx removed
   from the intent array."
-- Decisions are choices: the question in plain words, Option A, Option B, a recommendation, what
-  waiting costs, the reader's time. Recommendations state the risk ("the risk is low"), never
-  erase it ("nothing can break").
+- The decision is a real choice for the owner: the question in plain words, the answer you
+  recommend, the owner's time. The recommendation states the risk ("the risk is low"), never
+  erases it ("nothing can break"). Anything that is not the owner's call is not a decision.
 - A number appears only where it changes a decision, and it carries its comparison. Every number
   traces to the fact sheet. No rounding up for effect.
 - No praise, no process narration, no methodology, no review-round counts, no exclamation marks,
@@ -131,57 +163,55 @@ and thirty minutes of your time publishes three weeks of finished work."
   flags them; the owner may add more in the config file (`extra_banned_words`).
 - Say what is not done and what has not shipped. A brief that reads cleaner than the project is a
   defect.
-- Do not repeat a fact across the card, the breath and the decisions. Each fact lands once, where
-  it does the most work.
+- Do not repeat a fact across the blocks. Each fact lands once, where it does the most work.
 
 ## Length budget
 
-The card, the breath, why it matters and the two decisions are what the reader must get through.
-Target under 520 words for that span. Everything below scrolls and may be fuller, but every
-sentence still has a job.
-
-| Section | Target |
+| Block | Target |
 |---|---|
-| Card, all rows plus the dial reason | ≤ 170 words |
-| In one breath | 3 to 4 sentences, ≤ 90 words |
-| Why it matters | 2 to 3 sentences, ≤ 60 words, plus 2 to 5 projects it helps, one sentence each |
-| Each decision, all six parts | ≤ 100 words |
-| Each while-you-were-away item | one sentence; say whether it reached users |
-| Since the last briefing | every prior decision and next step, one sentence each, ≤ 8 items |
-| Right now | ≤ 80 words; say "nobody" when it is nobody |
-| Your way in | 2 sentences on the project manager, plus 2 or 3 first moves |
-| Next 30 days | 3 to 5 steps, each with what it unlocks |
-| Risks | 3 or 4, each as risk, why, and what would reduce it |
-| Glossary | ≤ 6 entries, one line each |
-| Planning records | ≤ 8 locations; ≤ 8 drift items, the ones that could cause rework first |
-| Code hygiene inventory | all ten categories, fixed order, each detail ≤ 40 words |
+| Main view, all of it, labels included | about 180 words |
+| Attention reason | one line, 20 words or fewer |
+| The big idea | one or two sentences, 40 words or fewer |
+| Each unlock | a few words, plus a short clause naming who it is for |
+| Each checklist item | 6 words or fewer |
+| The decision | question, one-sentence recommendation, time |
+| Activity read | one line |
+| What changed | at most 8 items, one sentence each |
+| Risks | 2 to 4 |
+| Planning records | at most 8 locations; at most 8 drift items, the ones that could cause rework first |
+| Code hygiene inventory | all ten categories, fixed order, each detail 40 words or fewer |
 
 ## Filling a template
 
 - Copy `templates/project.html` into the work folder and fill it there. Never write inside the
   repository being briefed.
 - Every `{{SLOT}}` must be filled or the build refuses. Slots are listed at the top of each
-  template with a one-line description.
+  template with a one-line description. `{{BRIEF_NUMBER}}` is the exception: `brf build` writes it.
 - Repeat blocks sit between `<!-- repeat: NAME -->` and `<!-- /repeat -->`. Duplicate the block
   once per item, fill each copy, then delete both markers. The build refuses a file that still
-  has them.
+  has them. The decision block may be kept zero times: delete it, markers included.
 - Keep the `<meta name="brf-template" ...>` tag. The build reads it and stamps the brief.
 - Badges: the class is the vocabulary word in kebab case, e.g. `badge--health-needs-attention`.
-  Colour follows the word, never the project: green for Healthy, Fast and None; amber for Needs
-  attention, Slow, any named bottleneck and Half a day; red for Stuck, On fire and Stopped. The
-  full mapping is in the template's header.
-- The attention dial: set `data-filled` on the `dial` element to the number; its dots fill.
-- The chart: three rows; each width is a percentage of the largest value (largest = 100). The
-  line beneath it says what the shape means.
+  Colour follows the word, never the project: green for Healthy and Fast; amber for Needs
+  attention and Slow; red for Stuck, On fire and Stopped. The full mapping is in the template's
+  header.
+- The attention dial: `ATTENTION_FILLED` is the number; its dots fill.
+- The meter: `MISSING_DONE` and `MISSING_TOTAL` are the counts of the checklist; each item's
+  class is `check--done` or `check--open` and its state word is "In place" or "Missing", so colour
+  never carries the meaning alone.
+- The activity chart: exactly eight weeks, oldest first. Each week's `WEEK_LEVEL` is its count
+  over the largest count, times 10, rounded (0 to 10); a week above zero that rounds to 0 gets 1.
+  The chart is a table, so the numbers are there for anyone who cannot see the bars.
 - Logo: paste an SVG mark into `{{LOGO_SVG}}` or leave it empty; empty collapses. Plain shapes
   and paths only: `brf check` refuses images, links, styles and scripts inside the SVG.
 - Markup: add no tags, attributes or CSS beyond what the template uses. `brf check` accepts only
   brf's allowlist: the template's elements, links that need a tap (https, http, mailto, #),
-  `style` attributes with plain values such as `width:40%`, and CSS whose only `url()` targets
-  are embedded data.
-- Theme: the `--brf-*` custom properties at the top of the style element hold the palette,
-  spacing, radii and type stops. To rebrand, replace the colour half only; the layout does not
-  depend on the brand values.
+  `style` attributes with plain values such as `width:40%`, radio buttons and their labels (for
+  the theme switch), and CSS whose only `url()` targets are embedded data.
+- Theme: the `--brf-*` custom properties at the top of the style element hold the palette for
+  light and for dark. Two hidden radio buttons and one visible label switch between them without
+  script (`:root:has(#brf-th-dark:checked)`). Leave them in place. An owner template may offer more
+  themes the same way.
 - The build strips every HTML comment, including yours.
 
 ## Naming and filing
@@ -219,15 +249,6 @@ Every brief carries three numbers, as meta tags and as a line at the foot of the
 - **Template version:** from the template's `brf-template` tag. A major bump means filled files
   from the old template no longer build (a slot was renamed or removed); a minor bump adds
   something optional; a patch changes wording or style only. Every change is in `CHANGELOG.md`.
-
-## Incorporating the prior brief
-
-The new brief continues the old one; it does not start over. In "Since the last briefing," list
-each decision the prior brief asked for and each of its next steps, and say in one sentence what
-happened to it: done, partly done, dropped, or still waiting. Carry forward any prior risk that is
-still open. If a prior claim turns out to have been wrong, say so plainly. For a project's first
-brief, write "First brief for this project." with one item naming what the reader should know
-first.
 
 ## Planning records inventory
 
@@ -290,18 +311,20 @@ An inventory for the reader, not a cleanup. Change nothing.
 One page across every registered project: `meta_brf_<yyyymmdd>.html`, from
 `templates/meta.html`, run with `/brf meta` after the project briefs. It is built from the current
 briefs in the output folder only, never from a fresh look at the repositories. `brf context
---meta` lists them. It answers three questions: what is each project in one line, what does each
-unlock for the others, and in what order should they get attention.
+--meta` lists them.
 
-- **Start here today:** the two or three projects that most deserve the morning, and why.
+- **Header:** logo, date, meta brief number, how many projects.
+- **The portfolio this morning:** one paragraph, three or four sentences.
+- **Start here:** the top three projects for today, each with why in one sentence.
 - **Decisions waiting on you:** every open decision from every current brief, one line each, with
   the time it needs.
-- **The sequence:** every registered project, numbered. Order by (1) what others wait on: a
-  project that unblocks several others comes before them; (2) the attention score; (3) the cost
-  of doing nothing; (4) the reader's time, less first when all else is equal. Each entry:
-  everyday name, Stage and Health badges, attention score, one line on what it is, what it
-  unlocks for named projects, what it is waiting on, and its brief's file name.
-- **How the projects connect:** the dependency chains in plain sentences.
+- **Every project, in order:** a card per project: rank, Stage and Health badges, the attention
+  dial, the big idea in one line, what it unlocks, and the missing-to-functional count as a meter,
+  with its brief's file name. Order by (1) what others wait on: a project that unblocks several
+  comes before them; (2) the attention score; (3) the cost of doing nothing; (4) the reader's
+  time, less first when all else is equal.
+- **How the projects connect:** dependency chains as project, relation, project, with one short
+  sentence each.
 - **Missing or out of date:** registered projects with no current brief, or one older than 14
   days.
 - Same voice rules. Deliver it with `brf deliver`; the previous meta brief moves to `archive/`.
@@ -323,17 +346,20 @@ width, a chart you need a legend to read.
 ## What must be true before you deliver
 
 - A stranger from another company understands every sentence.
-- No machine-assigned name appears before the appendices.
-- The card uses only the closed vocabulary, in the fixed order, with a dial reason that states
-  the trade.
-- Each decision is a real choice for the owner, with its risk stated.
+- The main view is about 180 words and carries no machine-assigned name.
+- Stage, Health and Momentum use only the closed vocabulary, and the dial's reason states the trade.
+- The big idea says what the project is for and why it matters.
+- The checklist says what is missing for the project to work, and the meter matches it.
+- There is at most one decision, it is a real choice for the owner, and its risk is stated.
+- The activity bars come from git and the counts are right.
 - Every number traces to a fact you verified. Anything unverified says so.
 - It says what has not shipped.
-- Every decision and next step from the prior brief is accounted for.
-- "Why it matters" names at least two other registered projects it helps, or says plainly that
-  it stands alone.
+- Every decision, missing item and risk from the prior brief is accounted for.
+- "What it unlocks" or "Related projects" names other registered projects, or the big idea says
+  plainly that it stands alone.
 - Every planning location has a verdict, and the drift list names anything already built.
 - The hygiene inventory covers all ten categories and says the repository was unchanged.
 - `brf build --verify` and `brf check` are clean, and you looked at the phone and laptop
   screenshots. If the render check was skipped (exit 3), everything else here is still true
   and your reply says the page was not render-checked.
+

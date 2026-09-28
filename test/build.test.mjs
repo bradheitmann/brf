@@ -20,9 +20,9 @@ test("builds the example: fonts in, comments out, versions stamped", () => {
   const stamp = readStamp(html);
   assert.equal(stamp.brief, 2);
   assert.equal(stamp.repo, "tidewater");
-  assert.equal(stamp.template, "project 1.0.0");
+  assert.equal(stamp.template, "project 2.0.0");
   assert.equal(stamp.brf_version, JSON.parse(readFileSync(join(ROOT, "package.json"), "utf8")).version);
-  assert.match(html, /Brief 2 of this project · brf \d+\.\d+\.\d+ · project template 1\.0\.0/);
+  assert.match(html, /Brief 2 of this project · brf \d+\.\d+\.\d+ · project template 2\.0\.0/);
 });
 
 test("refuses unfilled slots, a missing template tag, a bad name and a kind mismatch", () => {

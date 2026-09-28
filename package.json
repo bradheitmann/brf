@@ -1,6 +1,6 @@
 {
   "name": "brf",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Re-entry briefs: one phone-readable page per project, written by your coding agent from the repository's own records.",
   "private": true,
   "type": "module",

@@ -9,8 +9,11 @@ Write one brief for the repository you are standing in, then deliver it. With th
 `meta`, write the meta brief across every registered project instead. Nothing else: never brief
 another repository, never go looking for projects, never write inside the repository.
 
-`PROTOCOL.md` beside this file is binding. Read it in full before you start. The finished example
-is `examples/tidewater.filled.html`; read it for tone.
+`PROTOCOL.md` beside this file is binding. Read it in full before you start. The finished examples
+are `examples/tidewater.filled.html` and `examples/meta.filled.html`; read them for tone and length.
+A brief is big picture first: a status strip, the big idea, what it unlocks, what is missing for it
+to work, related projects, at most one decision and eight weeks of activity, in about 180 words.
+Everything else is collapsed.
 
 ## The command
 
@@ -59,37 +62,45 @@ tokens or key values.
    Put `tools.gh_prefix` in front of `gh` when it is set.
 5. Planning records inventory and code hygiene inventory, exactly as PROTOCOL.md says. Use
    Mister Clean only if `tools.mister_clean` is set. All audit output goes to `work_dir`.
+   Count commits per week for the last eight weeks:
+   `git --no-optional-locks log --all --since="8 weeks ago" --format=%cs`, grouped by the Monday
+   of each week, oldest first, zero for empty weeks.
 6. Copy the project template named in the context's `templates.project.path` (the owner's own template
    when they set one, otherwise `<skill>/templates/project.html`) to `<work_dir>/<repo_name>.filled.html`
-   and fill it:
-   the card first, then In one breath, Why it matters, at most two decisions, then the rest.
+   and fill it in this order: status strip (Stage, Health, Momentum, attention dial and reason), the
+   big idea, what it unlocks (up to 3), what is missing to be functional (up to 5, with the count),
+   related projects (up to 5), at most one decision (delete the block if none), the eight activity
+   weeks; then the collapsed sections: what changed since the last brief, risks, planning records,
+   code hygiene, footer. Leave `{{BRIEF_NUMBER}}` as it is; the build writes it.
 7. Build and render-check:
    `node "<skill>/bin/brf.mjs" build "<work_dir>/<repo_name>.filled.html" --out "<work_dir>/<output_name>" --verify`
    Read the 390 and 1440 screenshots in `<work_dir>/proof/` with your image viewer tool. Fix
-   and rebuild until it prints VERIFY CLEAN. Exit code 3 means the render check was skipped
+   and rebuild until it prints VERIFY CLEAN. The build prints the main view's word count: cut
+   until it is about 180. Exit code 3 means the render check was skipped
    (Playwright or Chromium is missing or would not start).
 8. `node "<skill>/bin/brf.mjs" check --file "<work_dir>/<output_name>"` and fix every problem.
-9. Reread everything above "Planning records" as the owner on a morning walk. Remove any
-   identifier, jargon or sentence that needs a second read. Rebuild and recheck if you changed
-   anything.
+9. Reread the main view as the owner on a morning walk. Remove any identifier, jargon or
+   sentence that needs a second read. Rebuild and recheck if you changed anything.
 10. `node "<skill>/bin/brf.mjs" snapshot --compare "<work_dir>/before.json"` must print
     `"same": true`.
 11. `node "<skill>/bin/brf.mjs" deliver "<work_dir>/<output_name>"`
-12. Reply with: the delivered path; the Project Card as a plain list; the first decision; and
-    everything you could not verify, including a skipped render check.
+12. Reply with: the delivered path; Stage, Health, Momentum, attention and the big idea as a plain
+    list; the decision if there is one; and everything you could not verify, including a skipped
+    render check.
 
 ## Meta brief (`/brf meta`)
 
 1. `node "<skill>/bin/brf.mjs" context --meta` and read it. It lists every registered project
    and its current brief, and gives `output_name`, `brief_number` and `work_dir`.
-2. Read each current brief: at least the card, In one breath, Why it matters and the decisions.
-   Do not look at the repositories themselves.
+2. Read each current brief's main view: the status strip, the big idea, what it unlocks, the
+   missing-to-functional count, related projects and the decision. Do not look at the repositories
+   themselves. A brief built from an older template has the same facts under other headings.
 3. Copy the meta template named in `templates.meta.path` from `context --meta` to `<work_dir>/meta.filled.html` and fill it as
    PROTOCOL.md, "The meta brief", says. Registered projects with no current brief go under
    "Missing or out of date".
 4. `node "<skill>/bin/brf.mjs" build "<work_dir>/meta.filled.html" --out "<work_dir>/<output_name>" --verify`,
    read the screenshots, run `check --file`, then `deliver`.
-5. Reply with the delivered path and the numbered sequence, one line per project.
+5. Reply with the delivered path and the ranked list, one line per project.
 
 ## If a step fails
 

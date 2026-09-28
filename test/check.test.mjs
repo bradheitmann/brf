@@ -57,3 +57,49 @@ test("checks the folder: names, registry, one current brief each", () => {
   assert.match(result.problems.join("\n"), /notes\.txt: not a brf file name/);
   assert.match(result.problems.join("\n"), /"stranger" is not in the registry/);
 });
+
+test("a radio-and-label theme switch passes; other inputs, forms and buttons do not", () => {
+  const html = built();
+  const name = "brf_tidewater_20261102.html";
+  const toggle =
+    '<input type="radio" name="t" id="t-light" class="vh" checked aria-label="Light theme">' +
+    '<input type="radio" name="t" id="t-dark" class="vh" aria-label="Dark theme">' +
+    '<label for="t-dark" class="theme" title="Switch" aria-label="Switch to dark">Light</label>';
+  assert.deepEqual(checkHtml(html.replace("</main>", `${toggle}</main>`), { name }), []);
+  assert.deepEqual(checkHtml(html.replace("</main>", '<input type="RADIO" name="t" id="x"></main>'), { name }), []);
+  const refused = {
+    "text input": '<input type="text" name="q">',
+    "image input": '<input type="image" src="https://example.com/a.png">',
+    "file input": '<input type="file">',
+    "submit input": '<input type="submit" formaction="https://example.com">',
+    "input without a type": '<input name="q">',
+    "two types": '<input type="radio" type="image" src="https://example.com/a.png">',
+    "radio with src": '<input type="radio" src="https://example.com/a.png">',
+    "radio with a value": '<input type="radio" name="t" value="x">',
+    "radio with style": '<input type="radio" style="width:1px">',
+    "radio with form": '<input type="radio" form="f">',
+    "radio with an event": '<input type="radio" onchange="fetch(1)">',
+    "label with an event": '<label for="t" onclick="fetch(1)">x</label>',
+    "label with a style": '<label for="t" style="width:1px">x</label>',
+    "label with form": '<label for="t" form="f">x</label>',
+    form: '<form action="https://example.com"><input type="radio"></form>',
+    button: '<button type="button">x</button>',
+    select: "<select><option>x</option></select>",
+    textarea: "<textarea>x</textarea>",
+  };
+  for (const [what, snippet] of Object.entries(refused)) {
+    assert.ok(checkHtml(html.replace("</main>", `${snippet}</main>`), { name }).length > 0, `${what} was not caught`);
+  }
+});
+
+test("the build writes the brief number into the page", () => {
+  const html = built();
+  assert.equal(html.includes("{{BRIEF_NUMBER}}"), false);
+  assert.match(html, /Brief 2</);
+});
+
+test("the shipped meta example builds and passes every check", () => {
+  const dir = tempDir();
+  const r = build({ input: join(ROOT, "examples", "meta.filled.html"), out: join(dir, "meta_brf_20261102.html"), example: true });
+  assert.deepEqual(checkHtml(readFileSync(r.path, "utf8"), { name: "meta_brf_20261102.html" }), []);
+});

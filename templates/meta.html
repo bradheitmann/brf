@@ -1,401 +1,370 @@
 <!DOCTYPE html>
 <!--
   ============================================================================
-  brf META TEMPLATE 1.0.0  ·  zero JavaScript, one file
+  brf META TEMPLATE 2.0.0  ·  zero JavaScript, one file
   ============================================================================
-  The meta brief: one page across every project in the registry. Build it
-  AFTER the project briefs, from their current files only:
+  The meta brief: one page across every project in the registry, built AFTER the
+  project briefs and from their current files only:
       brf build <work_dir>/meta.filled.html --out <work_dir>/meta_brf_20260131.html --verify
-  Read PROTOCOL.md, section "The meta brief". Same slot and repeat rules as
-  project.html; keep the brf-template meta tag; the build strips this comment.
+  Read PROTOCOL.md, "The meta brief". Same slot and repeat rules as project.html;
+  keep the brf-template meta tag; the build strips this comment.
 
   SLOTS, in document order
   ---------------------------------------------------------------------------
-  DOCUMENT_TITLE     e.g. "Meta brief, 31 January 2026"
-  BRIEFING_DATE      e.g. "31 January 2026"
+  DOCUMENT_TITLE     e.g. "Meta brief, 2 November 2026"
+  LOGO_SVG           an SVG mark pasted inline, or empty
+  BRIEFING_DATE      e.g. "2 November 2026"
+  BRIEF_NUMBER       written by brf build. Do not fill.
   PROJECT_COUNT      e.g. "6 projects"
-  IN_ONE_BREATH      three or four sentences on the whole portfolio this morning
-  START_LEAD         repeatable, with START_REST. A project to look at first, by its everyday name.
-  START_REST         why today, in one sentence. Begins with a space.
-  DEC_PROJECT        repeatable, with DEC_QUESTION and DEC_TIME. The project the decision belongs to.
-  DEC_QUESTION       the decision in plain words
-  DEC_TIME           the reader's time, e.g. "5 min"
-  SEQ_NUMBER         repeatable block SEQ, one per project, in priority order. 1, 2, 3...
-  SEQ_PROJECT        the project's everyday name
-  SEQ_STAGE_CLASS / SEQ_STAGE_TEXT     the Stage badge from its briefing
-  SEQ_HEALTH_CLASS / SEQ_HEALTH_TEXT   the Health badge from its briefing
-  SEQ_ATTENTION      its attention score, e.g. "4 of 5"
-  SEQ_WHAT           one plain line: what it is
-  SEQ_UNLOCKS        what it unlocks for other projects, naming them
-  SEQ_WAITS_ON       what it is waiting on (another project, the reader, nobody)
-  SEQ_FILE           its current briefing file name, e.g. brf_tidewater_20260131.html
-  CHAIN_TEXT         repeatable. One dependency chain in plain words.
-  STALE_ITEM         repeatable. A registered project with no current briefing, or one older than 14 days. Or "All briefings are current."
-  FOOTER_SOURCES     which briefings this was built from and when
+  PORTFOLIO_READ     one paragraph, three or four sentences: the whole portfolio this morning
+  START              repeat, at most 3. START_PROJECT (everyday name), START_WHY (why today, one sentence)
+  CARD               repeat, one per registered project with a current brief, in priority order:
+                     what others wait on first, then attention, then the cost of doing nothing.
+                     CARD_RANK 1, 2, 3...  CARD_PROJECT everyday name
+                     CARD_STAGE_CLASS / CARD_STAGE_TEXT, CARD_HEALTH_CLASS / CARD_HEALTH_TEXT
+                     CARD_ATTENTION_FILLED 1 to 5, CARD_ATTENTION_TEXT e.g. "4 of 5"
+                     CARD_BIG_IDEA one line
+                     CARD_UNLOCKS what it unlocks, naming projects
+                     CARD_MISSING_DONE / CARD_MISSING_TOTAL from its brief's checklist
+                     CARD_FILE its current brief's file name
+  CHAIN              repeat. CHAIN_FROM project, CHAIN_VERB one word or two (feeds, unblocks,
+                     depends on), CHAIN_TO project, CHAIN_WHY one short sentence
+  DEC                repeat, every open decision. DEC_PROJECT, DEC_QUESTION, DEC_TIME e.g. "5 min".
+                     With none: one copy, DEC_PROJECT "All projects", DEC_QUESTION "No decisions are waiting.", DEC_TIME "0 min"
+  STALE              repeat. STALE_ITEM: a registered project with no current brief or one older
+                     than 14 days. Or one item: "All briefs are current."
+  FOOTER_SOURCES     which briefs this was built from and when
 
-  Badge classes are the same as project.html (badge--stage-*, badge--health-*).
+  Badge classes are the same as project.html. The theme switch works as there.
   ============================================================================
 -->
-<html lang="en" data-style="stillness">
+<html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="brf-template" content="meta 1.0.0">
+<meta name="brf-template" content="meta 2.0.0">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
 <title>{{DOCUMENT_TITLE}}</title>
 <style>
 /* {{FONTS_CSS}} */
 
-/* ===================== THEME TOKENS, the stillness palette ===================== */
+/* ===================== TOKENS ===================== */
 :root {
-  /* ---------- VARIANT: stillness. Swap this section for another variant. ---------- */
-  --brf-semantic-surface-default:    #F7F5F2;
-  --brf-semantic-surface-alt:        #EDEDEA;
-  --brf-semantic-surface-warm:       #FEFEFE;
-  --brf-semantic-surface-chrome:     #1A1A18;
-  --brf-semantic-fg1:                #1A1A18;
-  --brf-semantic-fg2:                #4A4A45;
-  --brf-semantic-fg3:                #6E6E66;
-  --brf-semantic-fg-on-dark:         #F7F5F2;
-  --brf-semantic-fg-accent:          #3D4F6F;
-  --brf-semantic-border-default:     #E0DDD8;
-  --brf-semantic-border-strong:      #1A1A18;
-  --brf-semantic-border-accent:      #3D4F6F;
-  --brf-semantic-entity-primary:     #1A1A18;
-  --brf-semantic-entity-secondary-a: #3D4F6F;
-  --brf-semantic-entity-secondary-b: #8B7355;
-  --brf-signal-pass:                 #2D5E33;
-  --brf-signal-pass-surface:         #F0FAF2;
-  --brf-signal-caution:              #8A6B22;
-  --brf-signal-caution-surface:      #FDF8EF;
-  --brf-signal-risk:                 #7A2E26;
-  --brf-signal-risk-surface:         #FAF0F0;
-  --brf-signal-info:                 #3D4F6F;
-  --brf-signal-info-surface:         #EDEDEA;
-  --brf-accent-fill-surface:         #3D4F6F;  /* the one sanctioned accent fill: the attention dial */
-  --brf-accent-fill-text:            #F7F5F2;
-  --brf-focus-ring-color:            #1A1A18;
+  color-scheme: light;
+  --brf-bg:            #F5F5F3;
+  --brf-surface:       #FFFFFF;
+  --brf-surface-alt:   #ECECE9;
+  --brf-fg1:           #18181B;
+  --brf-fg2:           #4B4B52;
+  --brf-border:        #DDDDD8;
+  --brf-border-strong: #18181B;
+  --brf-accent:        #2F4A78;
+  --brf-accent-fg:     #FFFFFF;
+  --brf-pass:          #25603A;
+  --brf-pass-bg:       #E9F6EC;
+  --brf-caution:       #7F5E12;
+  --brf-caution-bg:    #FBF3E0;
+  --brf-risk:          #8A2A22;
+  --brf-risk-bg:       #FBECEA;
+  --brf-focus:         #18181B;
 
-  /* ---------- STRUCTURAL: universal across every variant. Leave alone. ---------- */
   --brf-space-1: 4px;  --brf-space-2: 8px;  --brf-space-3: 12px; --brf-space-4: 16px;
   --brf-space-5: 24px; --brf-space-6: 32px; --brf-space-7: 40px; --brf-space-8: 48px;
-  --brf-radii-none: 0; --brf-radii-sm: 2px; --brf-radii-md: 4px; --brf-radii-circle: 50%;
-  --brf-border-hair: 1px; --brf-border-thick: 2px; --brf-border-emphasis: 3px;
-  --brf-focus-ring-width: 2px; --brf-focus-ring-offset: 2px;
-  --brf-touch-target-min: 44px;
-  --brf-container-prose: 680px;  /* the system's reading measure */
+  --brf-radius-sm: 4px; --brf-radius-md: 8px; --brf-radius-lg: 14px; --brf-radius-full: 999px;
+  --brf-hair: 1px; --brf-thick: 2px;
+  --brf-touch: 44px;
+  --brf-page: 760px;
+  --brf-page-wide: 1120px;
 
-  /* ---------- TYPE: three role faces, four embedded weights, six named stops. ---------- */
   --font-display: 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
   --font-body:    'Inter', -apple-system, 'Helvetica Neue', Arial, sans-serif;
   --font-mono:    'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
-
-  --t-display: clamp(1.875rem, 1.4rem + 2vw, 2.5rem);   /* the project name */
-  --t-h2:      clamp(1.55rem, 1.25rem + 1.2vw, 2rem);   /* section headings */
-  --t-body:    1.0625rem;  /* 17px */
-  --t-body-sm: 0.9375rem;  /* 15px */
-  --t-label:   0.8125rem;  /* 13px — badges and every labelled pattern; the floor for meaning */
-  --t-micro:   0.75rem;    /* 12px — the two top-bar prefixes only, each beside a 13px badge; 12px is the phone floor for any text */
-
-  --tr-tight: -0.02em; --tr-snug: -0.01em; --tr-caps: 0.1em; --tr-wide: 0.04em;
-  --w-regular: 400; --w-strong: 600;  /* two weights; 600 is the brand ceiling */
+  --t-display: clamp(2rem, 1.5rem + 2.4vw, 3rem);
+  --t-idea:    clamp(1.375rem, 1.15rem + 1vw, 1.75rem);
+  --t-body:    1.0625rem;
+  --t-small:   0.9375rem;
+  --t-label:   0.8125rem;
+  --t-micro:   0.75rem;
+  --w-regular: 400; --w-strong: 600;
+}
+:root:has(#brf-th-dark:checked) {
+  color-scheme: dark;
+  --brf-bg:            #121214;
+  --brf-surface:       #1B1B1F;
+  --brf-surface-alt:   #26262B;
+  --brf-fg1:           #F2F2F3;
+  --brf-fg2:           #B4B4BC;
+  --brf-border:        #34343A;
+  --brf-border-strong: #F2F2F3;
+  --brf-accent:        #9DB8EC;
+  --brf-accent-fg:     #121214;
+  --brf-pass:          #7FD39A;
+  --brf-pass-bg:       #16291D;
+  --brf-caution:       #E8C46A;
+  --brf-caution-bg:    #2E2612;
+  --brf-risk:          #F2A097;
+  --brf-risk-bg:       #331916;
+  --brf-focus:         #F2F2F3;
 }
 
-/* ===================== RESET ===================== */
+/* ===================== BASE ===================== */
 *, *::before, *::after { box-sizing: border-box; }
-html { font-size: 100%; -webkit-text-size-adjust: 100%; }
+html { font-size: 100%; -webkit-text-size-adjust: 100%; background: var(--brf-bg); }
 html, body { margin: 0; padding: 0; }
-body {
-  background: var(--brf-semantic-surface-default);
-  color: var(--brf-semantic-fg1);
-  font-family: var(--font-body);
-  font-weight: var(--w-regular);
-  font-size: var(--t-body);
-  line-height: 1.6;
-  -webkit-font-smoothing: antialiased;
-}
-h1, h2, h3, p, dl, dd, ol, ul, table { margin: 0; }
-ol, ul { padding: 0; }
-table { border-collapse: collapse; width: 100%; }
-img, svg { max-width: 100%; }
-strong, b { font-weight: var(--w-strong); }
-a { color: var(--brf-semantic-fg-accent); text-decoration-thickness: 1px; }
-a:focus-visible, summary:focus-visible {
-  outline: var(--brf-focus-ring-width) solid var(--brf-focus-ring-color);
-  outline-offset: var(--brf-focus-ring-offset);
-}
-
-/* ===================== TYPE ROLES — four faces, six stops ===================== */
-/* Cormorant Garamond 400 = display · Inter 400 = body · Inter 600 = strong · JetBrains Mono 400 = labels and data. */
-.display { font-family: var(--font-display); font-weight: var(--w-regular); font-size: var(--t-display); line-height: 1.05; letter-spacing: var(--tr-tight); }
-h2 { font-family: var(--font-display); font-weight: var(--w-regular); font-size: var(--t-h2); line-height: 1.1; letter-spacing: var(--tr-snug); }
-h3 { font-family: var(--font-body); font-weight: var(--w-strong); font-size: var(--t-body); line-height: 1.35; letter-spacing: var(--tr-snug); }
-.small { font-size: var(--t-body-sm); line-height: 1.55; }
-.label {
-  font-family: var(--font-mono); font-weight: var(--w-regular); font-size: var(--t-label);
-  line-height: 1.25; letter-spacing: var(--tr-caps); text-transform: uppercase;
-}
-.micro {
-  font-family: var(--font-mono); font-weight: var(--w-regular); font-size: var(--t-micro);
-  line-height: 1.25; letter-spacing: var(--tr-caps); text-transform: uppercase;
-}
-.data { font-family: var(--font-mono); font-weight: var(--w-regular); font-size: var(--t-label); font-variant-numeric: tabular-nums; letter-spacing: var(--tr-wide); }
+body { background: var(--brf-bg); color: var(--brf-fg1); font-family: var(--font-body); font-size: var(--t-body); line-height: 1.55; -webkit-font-smoothing: antialiased; }
+h1, h2, h3, p, ul, ol, dl, dd, table, figure { margin: 0; }
+ul, ol { padding: 0; list-style: none; }
+strong { font-weight: var(--w-strong); }
+svg { max-width: 100%; }
+a { color: var(--brf-accent); }
+a:focus-visible, summary:focus-visible { outline: var(--brf-thick) solid var(--brf-focus); outline-offset: var(--brf-thick); }
+.label { font-family: var(--font-mono); font-size: var(--t-label); line-height: 1.3; letter-spacing: 0.08em; text-transform: uppercase; font-weight: var(--w-regular); }
+.micro { font-family: var(--font-mono); font-size: var(--t-micro); line-height: 1.3; letter-spacing: 0.06em; }
+.data { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+.small { font-size: var(--t-small); line-height: 1.5; }
+.muted { color: var(--brf-fg2); }
+.vh { position: absolute; top: 0; left: 0; width: 1px; height: 1px; margin: 0; padding: 0; border: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 
 /* ===================== PAGE ===================== */
-.brief { max-width: var(--brf-container-prose); margin: 0 auto; padding: var(--brf-space-5) var(--brf-space-4) var(--brf-space-8); }
-main > section + section { margin-top: var(--brf-space-7); }
-@media (min-width: 768px) { main > section + section { margin-top: var(--brf-space-8); } }
-section > * + * { margin-top: var(--brf-space-3); }
-section > h2 + * { margin-top: var(--brf-space-4); }
+.brief { max-width: var(--brf-page); margin: 0 auto; padding: var(--brf-space-5) var(--brf-space-4) var(--brf-space-8); }
+main { display: grid; gap: var(--brf-space-4); margin-top: var(--brf-space-5); }
+.panel { background: var(--brf-surface); border: var(--brf-hair) solid var(--brf-border); border-radius: var(--brf-radius-lg); padding: var(--brf-space-4); min-width: 0; }
+.panel > h2 { color: var(--brf-fg2); margin-bottom: var(--brf-space-3); }
+@media (min-width: 640px) { .panel { padding: var(--brf-space-5); } }
+.pair { display: grid; gap: var(--brf-space-4); }
+@media (min-width: 768px) { .pair { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } }
 
-/* ===================== TOP BAR ===================== */
-.topbar { padding-bottom: var(--brf-space-4); border-bottom: var(--brf-border-hair) solid var(--brf-semantic-border-default); }
-.topbar__brand { display: flex; align-items: center; flex-wrap: wrap; gap: var(--brf-space-2) var(--brf-space-3); }
-/* The logo slot collapses completely when it is empty: no element box, so no gap. */
-.topbar__logo { display: inline-flex; flex: 0 0 auto; color: var(--brf-semantic-fg1); }
-.topbar__logo:empty { display: none; }
-/* Logo mark height is deliberate and off the spacing scale: 28px on phone keeps a wordmark legible; 32px at tablet-up is space-6. */
-.topbar__logo svg { display: block; height: 28px; width: auto; }
-@media (min-width: 768px) { .topbar__logo svg { height: var(--brf-space-6); } }
-.topbar__name { min-width: 0; }
-.topbar__meta { display: flex; flex-wrap: wrap; align-items: center; gap: var(--brf-space-2) var(--brf-space-3); margin-top: var(--brf-space-4); }
-.topbar__date { color: var(--brf-semantic-fg2); }
-.topbar__pair { display: inline-flex; align-items: center; gap: var(--brf-space-2); }
-.topbar__prefix { color: var(--brf-semantic-fg2); }
+/* ===================== HEADER ===================== */
+.top { display: flex; align-items: center; justify-content: space-between; gap: var(--brf-space-3); flex-wrap: wrap; }
+.top__brand { display: flex; align-items: center; gap: var(--brf-space-3); min-width: 0; }
+.top__logo { display: inline-flex; flex: 0 0 auto; color: var(--brf-fg1); }
+.top__logo:empty { display: none; }
+.top__logo svg { display: block; height: 36px; width: auto; }
+.top__name { font-family: var(--font-display); font-weight: var(--w-regular); font-size: var(--t-display); line-height: 1; letter-spacing: -0.02em; overflow-wrap: anywhere; }
+.top__meta { color: var(--brf-fg2); margin-top: var(--brf-space-2); }
 
-/* ===================== BADGES =====================
-   One neutral base; only Health, Momentum, Bottleneck and Your-time carry signal colour,
-   and the same vocabulary word carries the same colour on every project's card. */
-.badge {
-  display: inline-block; padding: var(--brf-space-1) var(--brf-space-2);
-  border-radius: var(--brf-radii-sm); border: var(--brf-border-hair) solid var(--brf-semantic-border-default);
-  color: var(--brf-semantic-fg1); background: var(--brf-semantic-surface-alt);
-}
-.badge--health-healthy, .badge--momentum-fast, .badge--bottleneck-none, .badge--time-none,
-.badge--plan-current, .badge--hyg-clean {
-  color: var(--brf-signal-pass); background: var(--brf-signal-pass-surface); border-color: var(--brf-signal-pass);
-}
-.badge--health-needs-attention, .badge--momentum-slow, .badge--bottleneck-you,
-.badge--bottleneck-team, .badge--bottleneck-outside-party, .badge--time-half-a-day,
-.badge--plan-stale, .badge--hyg-needs-cleanup {
-  color: var(--brf-signal-caution); background: var(--brf-signal-caution-surface); border-color: var(--brf-signal-caution);
-}
-.badge--health-stuck, .badge--health-on-fire, .badge--momentum-stopped,
-.badge--plan-contradicts, .badge--hyg-serious {
-  color: var(--brf-signal-risk); background: var(--brf-signal-risk-surface); border-color: var(--brf-signal-risk);
-}
+/* ===================== THEME SWITCH (no script) =====================
+   Two radio buttons hold the state; the one visible label names the current theme and
+   points at the other, so a tap switches it. */
+.theme { display: inline-flex; align-items: center; gap: var(--brf-space-2); min-height: var(--brf-touch); padding: 0 var(--brf-space-4); border: var(--brf-hair) solid var(--brf-border); border-radius: var(--brf-radius-full); background: var(--brf-surface); color: var(--brf-fg1); cursor: pointer; user-select: none; }
+.theme::before { content: ""; width: 14px; height: 14px; border-radius: var(--brf-radius-full); border: var(--brf-thick) solid var(--brf-fg1); background: linear-gradient(90deg, var(--brf-fg1) 50%, transparent 50%); }
+.theme--dark { display: none; }
+:root:has(#brf-th-dark:checked) .theme--light { display: none; }
+:root:has(#brf-th-dark:checked) .theme--dark { display: inline-flex; }
+:root:has(#brf-th-light:focus-visible) .theme--light,
+:root:has(#brf-th-dark:focus-visible) .theme--dark { outline: var(--brf-thick) solid var(--brf-focus); outline-offset: var(--brf-thick); }
 
-/* ===================== PROJECT CARD ===================== */
-.card {
-  border: var(--brf-border-hair) solid var(--brf-semantic-border-default);
-  border-radius: var(--brf-radii-md); background: var(--brf-semantic-surface-warm);
-  padding: var(--brf-space-5) var(--brf-space-4);
-}
-@media (min-width: 640px) { .card { padding: var(--brf-space-5); } }
-/* Inside the card the ground is surface-warm, where only fg1 clears 4.5:1 in every
-   variant. Nothing in here uses fg2, fg3 or the accent as text. */
-.card__table th, .card__table td { text-align: left; vertical-align: top; color: var(--brf-semantic-fg1); }
-.card__table tr { border-bottom: var(--brf-border-hair) solid var(--brf-semantic-border-default); }
-.card__table tr:last-child { border-bottom: none; }
-.card__table td .badge { margin-right: var(--brf-space-2); }
-/* Phone: label over value. A 13px mono label and a full sentence cannot share a row at 360px. */
-@media (max-width: 639px) {
-  .card__table, .card__table tbody, .card__table tr, .card__table th, .card__table td { display: block; width: auto; }
-  .card__table tr { padding: var(--brf-space-3) 0; }
-  .card__table tr:first-child { padding-top: 0; }
-  .card__table tr:last-child { padding-bottom: 0; }
-  .card__table th { padding-bottom: var(--brf-space-2); }
-}
-@media (min-width: 640px) {
-  .card__table th { width: 40%; padding: var(--brf-space-3) var(--brf-space-4) var(--brf-space-3) 0; }
-  .card__table td { padding: var(--brf-space-3) 0; }
-  .card__table tr:first-child th, .card__table tr:first-child td { padding-top: 0; }
-  .card__table tr:last-child th, .card__table tr:last-child td { padding-bottom: 0; }
-}
-/* ---- attention dial ---- */
-.dial-block { margin-top: var(--brf-space-5); padding-top: var(--brf-space-4); border-top: var(--brf-border-hair) solid var(--brf-semantic-border-default); }
-.dial { display: flex; align-items: center; flex-wrap: wrap; gap: var(--brf-space-3) var(--brf-space-4); margin-top: var(--brf-space-3); }
-.dial__dots { display: inline-flex; gap: var(--brf-space-2); flex: 0 0 auto; }
-.dial__dot {
-  display: block; width: var(--brf-space-5); height: var(--brf-space-5); border-radius: var(--brf-radii-circle);
-  border: var(--brf-border-hair) solid var(--brf-semantic-border-default); background: var(--brf-semantic-surface-alt);
-}
-/* data-filled on the dial, 1 to 5, sets how many dots are filled. This is the one accent fill in the document. */
+/* ===================== BADGES ===================== */
+.badge { display: inline-block; padding: var(--brf-space-1) var(--brf-space-2); border-radius: var(--brf-radius-sm); border: var(--brf-hair) solid var(--brf-border); background: var(--brf-surface-alt); color: var(--brf-fg1); }
+.badge--health-healthy, .badge--momentum-fast, .badge--plan-current, .badge--hyg-clean { color: var(--brf-pass); background: var(--brf-pass-bg); border-color: var(--brf-pass); }
+.badge--health-needs-attention, .badge--momentum-slow, .badge--plan-stale, .badge--hyg-needs-cleanup { color: var(--brf-caution); background: var(--brf-caution-bg); border-color: var(--brf-caution); }
+.badge--health-stuck, .badge--health-on-fire, .badge--momentum-stopped, .badge--plan-contradicts, .badge--hyg-serious { color: var(--brf-risk); background: var(--brf-risk-bg); border-color: var(--brf-risk); }
+
+/* ===================== STATUS STRIP ===================== */
+.status { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--brf-space-2); }
+@media (min-width: 640px) { .status { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.tile { background: var(--brf-surface); border: var(--brf-hair) solid var(--brf-border); border-radius: var(--brf-radius-md); padding: var(--brf-space-3); min-width: 0; }
+.tile__name { display: block; color: var(--brf-fg2); margin-bottom: var(--brf-space-2); }
+.tile--attention { grid-column: 1 / -1; }
+@media (min-width: 640px) { .tile--attention { grid-column: auto; } }
+.dial { display: flex; align-items: center; gap: var(--brf-space-2); flex-wrap: wrap; }
+.dial__dots { display: inline-flex; gap: var(--brf-space-1); }
+.dial__dot { display: block; width: 14px; height: 14px; border-radius: var(--brf-radius-full); border: var(--brf-hair) solid var(--brf-fg2); background: transparent; }
 .dial[data-filled="1"] .dial__dot:nth-child(-n+1),
 .dial[data-filled="2"] .dial__dot:nth-child(-n+2),
 .dial[data-filled="3"] .dial__dot:nth-child(-n+3),
 .dial[data-filled="4"] .dial__dot:nth-child(-n+4),
-.dial[data-filled="5"] .dial__dot:nth-child(-n+5) {
-  background: var(--brf-accent-fill-surface); border-color: var(--brf-accent-fill-surface);
-}
-.dial__reason { margin-top: var(--brf-space-3); color: var(--brf-semantic-fg1); }
+.dial[data-filled="5"] .dial__dot:nth-child(-n+5) { background: var(--brf-accent); border-color: var(--brf-accent); }
+.reason { grid-column: 1 / -1; color: var(--brf-fg2); padding: 0 var(--brf-space-1); }
 
-/* ===================== IN ONE BREATH ===================== */
-.breath { border-left: var(--brf-border-emphasis) solid var(--brf-semantic-border-accent); padding-left: var(--brf-space-4); }
+/* ===================== BIG IDEA ===================== */
+.idea { border-left: 4px solid var(--brf-accent); }
+.idea__text { font-family: var(--font-display); font-size: var(--t-idea); line-height: 1.25; }
 
-/* ===================== DECISIONS ===================== */
-.decision { border: var(--brf-border-hair) solid var(--brf-semantic-border-default); border-radius: var(--brf-radii-md); padding: var(--brf-space-4); }
-.decision + .decision { margin-top: var(--brf-space-4); }
-.decision__eyebrow { color: var(--brf-semantic-fg-accent); margin-bottom: var(--brf-space-2); }
-.decision__options { list-style: none; margin-top: var(--brf-space-3); }
-.decision__options li { padding: var(--brf-space-3) 0; border-top: var(--brf-border-hair) solid var(--brf-semantic-border-default); }
-.decision__options li:first-child { border-top: none; }
-.decision__label, .decision__footline .label { display: block; color: var(--brf-semantic-fg-accent); margin-bottom: var(--brf-space-1); }
-.decision__footline--muted .label { color: var(--brf-semantic-fg2); }
-.decision__foot { margin-top: var(--brf-space-3); padding-top: var(--brf-space-3); border-top: var(--brf-border-hair) solid var(--brf-semantic-border-default); }
-.decision__footline + .decision__footline { margin-top: var(--brf-space-3); }
-.decision__footline--muted { color: var(--brf-semantic-fg2); }
+/* ===================== UNLOCKS ===================== */
+.unlocks { display: grid; gap: var(--brf-space-3); counter-reset: unlock; }
+.unlocks li { counter-increment: unlock; display: grid; grid-template-columns: var(--brf-space-6) minmax(0, 1fr); column-gap: var(--brf-space-2); }
+.unlocks li::before { content: counter(unlock); grid-row: span 2; width: 28px; height: 28px; border-radius: var(--brf-radius-full); background: var(--brf-surface-alt); color: var(--brf-fg1); font-family: var(--font-mono); font-size: var(--t-label); display: flex; align-items: center; justify-content: center; }
+.unlocks__for { color: var(--brf-fg2); }
 
-/* ===================== WHILE YOU WERE AWAY ===================== */
-.cols > * + * { margin-top: var(--brf-space-6); }
-.list-group + .list-group { margin-top: var(--brf-space-5); }
-.list-group__note { color: var(--brf-semantic-fg2); margin-top: var(--brf-space-2); }
-.list-group__items { list-style: none; margin-top: var(--brf-space-2); }
-.list-group__items li { position: relative; padding: var(--brf-space-2) 0 var(--brf-space-2) var(--brf-space-4); }
-.list-group__items li::before { content: "\2013"; position: absolute; left: 0; color: var(--brf-semantic-fg2); }
-@media (min-width: 900px) {
-  /* This one section carries two columns, so it steps outside the reading measure as a
-     whole, heading included. Half a section sticking out reads as a mistake. */
-  .section--wide { margin-left: calc(-1 * var(--brf-space-7)); margin-right: calc(-1 * var(--brf-space-7)); }
-  .cols { display: grid; grid-template-columns: minmax(0, 1fr) 15rem; gap: var(--brf-space-6); align-items: start; }
-  .cols > * + * { margin-top: 0; }
-  /* The chart is the answer to the list beside it, so it stays in view while the list scrolls. */
-  .chart-col { position: sticky; top: var(--brf-space-5); }
-}
+/* ===================== MISSING TO FUNCTIONAL ===================== */
+.meter { display: flex; gap: var(--brf-space-1); margin: var(--brf-space-2) 0 var(--brf-space-3); }
+.meter__seg { flex: 1 1 0; height: 10px; border-radius: var(--brf-radius-full); background: var(--brf-surface-alt); border: var(--brf-hair) solid var(--brf-border); }
+.meter[data-total="1"] .meter__seg:nth-child(n+2), .meter[data-total="2"] .meter__seg:nth-child(n+3),
+.meter[data-total="3"] .meter__seg:nth-child(n+4), .meter[data-total="4"] .meter__seg:nth-child(n+5) { display: none; }
+.meter[data-done="1"] .meter__seg:nth-child(-n+1), .meter[data-done="2"] .meter__seg:nth-child(-n+2),
+.meter[data-done="3"] .meter__seg:nth-child(-n+3), .meter[data-done="4"] .meter__seg:nth-child(-n+4),
+.meter[data-done="5"] .meter__seg:nth-child(-n+5) { background: var(--brf-pass); border-color: var(--brf-pass); }
+.meter-count { font-weight: var(--w-strong); }
+.checks { display: grid; gap: var(--brf-space-2); }
+.check { display: grid; grid-template-columns: 18px minmax(0, 1fr); column-gap: var(--brf-space-2); align-items: start; }
+.check::before { content: ""; width: 16px; height: 16px; margin-top: 3px; border-radius: var(--brf-radius-sm); border: var(--brf-thick) solid var(--brf-fg2); }
+.check--done::before { background: var(--brf-pass); border-color: var(--brf-pass); }
+.check__state { display: block; color: var(--brf-fg2); }
+.check--open .check__state { color: var(--brf-caution); }
 
-/* ===================== CHART ===================== */
-.chart { margin-top: var(--brf-space-3); }
-.chart__row { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: var(--brf-space-3); row-gap: var(--brf-space-1); margin-top: var(--brf-space-4); }
-.chart__label { grid-column: 1 / -1; color: var(--brf-semantic-fg2); }
-/* A span is inline and would ignore width and height, so both bar parts are blocks. */
-.chart__track { display: block; height: var(--brf-space-4); background: var(--brf-semantic-surface-alt); border-radius: var(--brf-radii-sm); overflow: hidden; }
-.chart__fill { display: block; height: 100%; border-radius: var(--brf-radii-sm); }
-.chart__fill--1 { background: var(--brf-semantic-entity-primary); }
-.chart__fill--2 { background: var(--brf-semantic-entity-secondary-a); }
-.chart__fill--3 { background: var(--brf-semantic-entity-secondary-b); }
-.chart__value { text-align: right; min-width: var(--brf-space-6); }
-.chart__read { margin-top: var(--brf-space-4); }
-.chart__read .label { display: block; color: var(--brf-semantic-fg-accent); margin-bottom: var(--brf-space-1); }
+/* ===================== RELATED ===================== */
+.chips { display: flex; flex-wrap: wrap; gap: var(--brf-space-2); }
+.chip { display: inline-flex; align-items: baseline; gap: var(--brf-space-2); padding: var(--brf-space-1) var(--brf-space-3); border: var(--brf-hair) solid var(--brf-border); border-radius: var(--brf-radius-full); background: var(--brf-surface-alt); }
+.chip__rel { color: var(--brf-fg2); }
 
-/* ===================== NEXT 30 DAYS ===================== */
-.steps { list-style: none; counter-reset: step; }
-.steps li { counter-increment: step; position: relative; padding: var(--brf-space-3) 0 var(--brf-space-3) var(--brf-space-7); border-top: var(--brf-border-hair) solid var(--brf-semantic-border-default); }
-.steps li:first-child { border-top: none; padding-top: 0; }
-.steps li::before {
-  content: counter(step); position: absolute; left: 0; top: var(--brf-space-3);
-  font-family: var(--font-mono); font-size: var(--t-label); color: var(--brf-semantic-fg-accent);
-  width: var(--brf-space-5); text-align: right;
-}
-.steps li:first-child::before { top: 0; }
+/* ===================== DECISION ===================== */
+.decision { border: var(--brf-thick) solid var(--brf-border-strong); }
+.decision__q { font-weight: var(--w-strong); font-size: var(--t-body); }
+.decision__row { margin-top: var(--brf-space-3); }
+.decision__row .label { display: block; color: var(--brf-fg2); margin-bottom: var(--brf-space-1); }
 
-/* ===================== RISKS ===================== */
-.risk { padding: var(--brf-space-4) 0; border-top: var(--brf-border-hair) solid var(--brf-semantic-border-default); }
-.risk:first-child { border-top: none; padding-top: 0; }
-.risk__title { font-weight: var(--w-strong); }
-.risk__why { margin-top: var(--brf-space-2); color: var(--brf-semantic-fg2); }
-.risk__reducer { margin-top: var(--brf-space-2); color: var(--brf-semantic-fg2); }
-.risk__reducer .label { display: block; color: var(--brf-semantic-fg-accent); margin-bottom: var(--brf-space-1); }
+/* ===================== ACTIVITY (a table drawn as bars) ===================== */
+.bars { display: block; width: 100%; border-collapse: collapse; }
+.bars caption { display: block; text-align: left; color: var(--brf-fg2); margin-bottom: var(--brf-space-3); }
+.bars tbody { display: flex; align-items: stretch; gap: var(--brf-space-1); height: 132px; }
+.bars tr { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column-reverse; align-items: stretch; }
+.bars th { font-weight: var(--w-regular); color: var(--brf-fg2); text-align: center; padding-top: var(--brf-space-1); white-space: nowrap; overflow: hidden; min-width: 0; }
+.bars td { flex: 1 1 auto; display: flex; flex-direction: column; justify-content: flex-end; align-items: stretch; padding: 0; }
+.bars__value { text-align: center; font-size: var(--t-micro); color: var(--brf-fg1); }
+.bars__bar { display: block; height: 0; min-height: 2px; background: var(--brf-surface-alt); border: var(--brf-hair) solid var(--brf-fg2); border-radius: var(--brf-radius-sm) var(--brf-radius-sm) 0 0; }
+.bars tr:last-child .bars__bar { background: var(--brf-accent); border-color: var(--brf-accent); }
+.bars__bar[data-level="1"] { height: 10%; } .bars__bar[data-level="2"] { height: 20%; } .bars__bar[data-level="3"] { height: 30%; }
+.bars__bar[data-level="4"] { height: 40%; } .bars__bar[data-level="5"] { height: 50%; } .bars__bar[data-level="6"] { height: 60%; }
+.bars__bar[data-level="7"] { height: 70%; } .bars__bar[data-level="8"] { height: 80%; } .bars__bar[data-level="9"] { height: 90%; }
+.bars__bar[data-level="10"] { height: 100%; }
+/* Phones: only the first and last week keep a visible date. */
+@media (max-width: 479px) { .bars tr:not(:first-child):not(:last-child) th { clip-path: inset(50%); } }
+.read { margin-top: var(--brf-space-3); }
 
-/* ===================== GLOSSARY ===================== */
-/* On surface-alt only fg1 clears 4.5:1 in every variant, so the whole strip is fg1. */
-.glossary { display: flex; flex-wrap: wrap; gap: var(--brf-space-4) var(--brf-space-5); padding: var(--brf-space-4); background: var(--brf-semantic-surface-alt); border-radius: var(--brf-radii-md); }
-.glossary__entry { flex: 1 1 15rem; min-width: 0; }
-.glossary dt { color: var(--brf-semantic-fg1); }
-.glossary dd { margin-top: var(--brf-space-1); color: var(--brf-semantic-fg1); }
+/* ===================== COLLAPSED SECTIONS ===================== */
+.more { background: var(--brf-surface); border: var(--brf-hair) solid var(--brf-border); border-radius: var(--brf-radius-md); }
+.more > summary { display: flex; align-items: center; justify-content: space-between; gap: var(--brf-space-3); min-height: var(--brf-touch); padding: var(--brf-space-2) var(--brf-space-4); cursor: pointer; list-style: none; }
+.more > summary::-webkit-details-marker { display: none; }
+.more > summary::after { content: "+"; font-family: var(--font-mono); color: var(--brf-fg2); }
+.more[open] > summary::after { content: "\2212"; }
+.more__title { font-size: var(--t-body); font-weight: var(--w-strong); }
+.more__body { padding: 0 var(--brf-space-4) var(--brf-space-4); display: grid; gap: var(--brf-space-3); }
+.list li { position: relative; padding-left: var(--brf-space-4); }
+.list li + li { margin-top: var(--brf-space-2); }
+.list li::before { content: "\2013"; position: absolute; left: 0; color: var(--brf-fg2); }
+.inv { padding-top: var(--brf-space-3); border-top: var(--brf-hair) solid var(--brf-border); }
+.inv__head { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--brf-space-2) var(--brf-space-3); }
+.inv__title { font-weight: var(--w-strong); overflow-wrap: anywhere; }
+.inv__body { color: var(--brf-fg2); margin-top: var(--brf-space-1); overflow-wrap: anywhere; }
 
 /* ===================== FOOTER ===================== */
-.inv { padding: var(--brf-space-4) 0; border-top: var(--brf-border-hair) solid var(--brf-semantic-border-default); }
-.inv:first-of-type { border-top: none; padding-top: 0; }
-.inv__head { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--brf-space-2) var(--brf-space-3); }
-.inv__title { font-weight: var(--w-strong); overflow-wrap: anywhere; min-width: 0; }
-.inv__count { color: var(--brf-semantic-fg2); }
-.inv__body { margin-top: var(--brf-space-2); color: var(--brf-semantic-fg2); overflow-wrap: anywhere; }
-.inv__match { margin-top: var(--brf-space-2); color: var(--brf-semantic-fg2); overflow-wrap: anywhere; }
-.inv__match .label { display: block; color: var(--brf-semantic-fg-accent); margin-bottom: var(--brf-space-1); }
-.appendix__lead { color: var(--brf-semantic-fg1); margin-bottom: var(--brf-space-4); }
-.drift { margin-top: var(--brf-space-5); }
-.footer { margin-top: var(--brf-space-7); padding-top: var(--brf-space-4); border-top: var(--brf-border-hair) solid var(--brf-semantic-border-default); color: var(--brf-semantic-fg2); }
+.footer { margin-top: var(--brf-space-6); padding-top: var(--brf-space-4); border-top: var(--brf-hair) solid var(--brf-border); color: var(--brf-fg2); overflow-wrap: anywhere; }
 
-/* ===================== REDUCED MOTION ===================== */
-/* This document has no transition and no animation. The path is declared so that a later
-   edit which adds one inherits a safe default. */
-@media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; } }
-
-/* ===================== PRINT ===================== */
-@media print {
-  .card, .decision, .risk, .steps li, .glossary { break-inside: avoid; page-break-inside: avoid; }
-  body { background: var(--brf-semantic-surface-default); }
-  .badge, .card, .decision { border-color: var(--brf-semantic-fg1); }
-  .footer, .topbar__date, .topbar__prefix, .chart__label, .risk__why, .risk__reducer, .list-group__note { color: var(--brf-semantic-fg1); }
-  .chart-col { position: static; }
-  a { color: var(--brf-semantic-fg1); text-decoration: underline; }
+/* ===================== WIDE SCREENS ===================== */
+@media (min-width: 1100px) {
+  .brief { max-width: var(--brf-page-wide); }
+  main { grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); align-items: start; }
+  main > .status, main > .idea, main > .stack { grid-column: 1 / -1; }
 }
+@media print {
+  .theme { display: none; }
+  details { break-inside: avoid; }
+}
+
+/* ===================== META: CARDS AND CHAINS ===================== */
+.read-para { font-size: var(--t-body); }
+.start { display: grid; gap: var(--brf-space-3); counter-reset: start; }
+.start li { counter-increment: start; display: grid; grid-template-columns: var(--brf-space-6) minmax(0, 1fr); column-gap: var(--brf-space-2); }
+.start li::before { content: counter(start); grid-row: span 2; width: 28px; height: 28px; border-radius: var(--brf-radius-full); background: var(--brf-accent); color: var(--brf-accent-fg); font-family: var(--font-mono); font-size: var(--t-label); display: flex; align-items: center; justify-content: center; }
+.cards { display: grid; gap: var(--brf-space-3); }
+@media (min-width: 768px) { .cards { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 1100px) { .cards { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.pcard { background: var(--brf-surface); border: var(--brf-hair) solid var(--brf-border); border-radius: var(--brf-radius-md); padding: var(--brf-space-4); display: grid; gap: var(--brf-space-2); align-content: start; min-width: 0; }
+.pcard__head { display: flex; align-items: baseline; gap: var(--brf-space-2); }
+.pcard__rank { color: var(--brf-fg2); }
+.pcard__name { font-size: var(--t-body); font-weight: var(--w-strong); overflow-wrap: anywhere; }
+.pcard__badges { display: flex; flex-wrap: wrap; align-items: center; gap: var(--brf-space-2); }
+.pcard__row .micro { display: block; color: var(--brf-fg2); }
+.pcard .meter { margin: 0; }
+.pcard__file { color: var(--brf-fg2); overflow-wrap: anywhere; }
+.chains { display: grid; gap: var(--brf-space-3); }
+.chain { display: flex; flex-wrap: wrap; align-items: center; gap: var(--brf-space-2); }
+.chain__verb { color: var(--brf-fg2); }
+.chain__verb::before { content: "\2192  "; }
+.chain__why { flex-basis: 100%; color: var(--brf-fg2); }
+.decs { display: grid; gap: var(--brf-space-2); }
+.dec { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--brf-space-1) var(--brf-space-3); padding-top: var(--brf-space-2); border-top: var(--brf-hair) solid var(--brf-border); }
+.dec:first-child { border-top: 0; padding-top: 0; }
+.dec__project { grid-column: 1 / -1; color: var(--brf-fg2); }
+@media (min-width: 1100px) { main > .wide { grid-column: 1 / -1; } }
 </style>
 </head>
 <body>
+<input type="radio" name="theme" id="brf-th-light" class="vh" checked aria-label="Light theme">
+<input type="radio" name="theme" id="brf-th-dark" class="vh" aria-label="Dark theme">
 <div class="brief">
 
-  <header class="topbar">
-    <div class="topbar__brand">
-      <h1 class="display topbar__name">Your portfolio</h1>
+  <header class="top">
+    <div class="top__brand">
+      <span class="top__logo">{{LOGO_SVG}}</span>
+      <div>
+        <h1 class="top__name">Your portfolio</h1>
+        <p class="label top__meta">{{BRIEFING_DATE}} · Meta brief {{BRIEF_NUMBER}} · {{PROJECT_COUNT}}</p>
+      </div>
     </div>
-    <div class="topbar__meta">
-      <span class="label topbar__date">{{BRIEFING_DATE}}</span>
-      <span class="label badge badge--away">{{PROJECT_COUNT}}</span>
-    </div>
+    <label for="brf-th-dark" class="label theme theme--light" title="Switch to dark">Light</label>
+    <label for="brf-th-light" class="label theme theme--dark" title="Switch to light">Dark</label>
   </header>
 
   <main>
 
-    <section>
-      <h2>In one breath</h2>
-      <p>{{IN_ONE_BREATH}}</p>
+    <section class="panel idea">
+      <h2 class="label">The portfolio this morning</h2>
+      <p class="read-para">{{PORTFOLIO_READ}}</p>
     </section>
 
-    <section>
-      <h2>Start here today</h2>
-      <ol class="steps small">
+    <section class="panel">
+      <h2 class="label">Start here</h2>
+      <ol class="start">
         <!-- repeat: START -->
-        <li><strong>{{START_LEAD}}.</strong>{{START_REST}}</li>
+        <li><strong>{{START_PROJECT}}</strong><span class="small muted">{{START_WHY}}</span></li>
         <!-- /repeat -->
       </ol>
     </section>
 
-    <section>
-      <h2>Decisions waiting on you</h2>
-      <!-- repeat: DEC -->
-      <div class="inv">
-        <div class="inv__head"><p class="inv__title">{{DEC_PROJECT}}</p><span class="small inv__count data">{{DEC_TIME}}</span></div>
-        <p class="small inv__body">{{DEC_QUESTION}}</p>
-      </div>
-      <!-- /repeat -->
-    </section>
-
-    <section>
-      <h2>The sequence</h2>
-      <p class="small appendix__lead">Every project in the order to give it attention. Projects that others wait on come first.</p>
-      <!-- repeat: SEQ -->
-      <div class="inv">
-        <div class="inv__head"><span class="data inv__count">{{SEQ_NUMBER}}</span><p class="inv__title">{{SEQ_PROJECT}}</p><span class="label badge {{SEQ_STAGE_CLASS}}">{{SEQ_STAGE_TEXT}}</span><span class="label badge {{SEQ_HEALTH_CLASS}}">{{SEQ_HEALTH_TEXT}}</span><span class="small inv__count">Attention {{SEQ_ATTENTION}}</span></div>
-        <p class="small inv__body">{{SEQ_WHAT}}</p>
-        <p class="small inv__match"><span class="label">Unlocks</span>{{SEQ_UNLOCKS}}</p>
-        <p class="small inv__match"><span class="label">Waiting on</span>{{SEQ_WAITS_ON}}</p>
-        <p class="small inv__match data">{{SEQ_FILE}}</p>
-      </div>
-      <!-- /repeat -->
-    </section>
-
-    <section>
-      <h2>How the projects connect</h2>
-      <ul class="list-group__items small">
-        <!-- repeat: CHAIN -->
-        <li>{{CHAIN_TEXT}}</li>
+    <section class="panel">
+      <h2 class="label">Decisions waiting on you</h2>
+      <ul class="decs small">
+        <!-- repeat: DEC -->
+        <li class="dec"><span class="micro dec__project">{{DEC_PROJECT}}</span><span>{{DEC_QUESTION}}</span><span class="data">{{DEC_TIME}}</span></li>
         <!-- /repeat -->
       </ul>
     </section>
 
-    <section>
-      <h2>Missing or out of date</h2>
-      <ul class="list-group__items small">
+    <section class="wide">
+      <h2 class="label muted">Every project, in order</h2>
+      <ol class="cards">
+        <!-- repeat: CARD -->
+        <li class="pcard">
+          <div class="pcard__head"><span class="data pcard__rank">{{CARD_RANK}}</span><h3 class="pcard__name">{{CARD_PROJECT}}</h3></div>
+          <div class="pcard__badges">
+            <span class="label badge {{CARD_STAGE_CLASS}}">{{CARD_STAGE_TEXT}}</span>
+            <span class="label badge {{CARD_HEALTH_CLASS}}">{{CARD_HEALTH_TEXT}}</span>
+            <span class="dial" data-filled="{{CARD_ATTENTION_FILLED}}"><span class="dial__dots" role="img" aria-label="Attention {{CARD_ATTENTION_TEXT}}"><span class="dial__dot"></span><span class="dial__dot"></span><span class="dial__dot"></span><span class="dial__dot"></span><span class="dial__dot"></span></span></span>
+          </div>
+          <p class="small">{{CARD_BIG_IDEA}}</p>
+          <p class="small pcard__row"><span class="micro">Unlocks</span>{{CARD_UNLOCKS}}</p>
+          <p class="small pcard__row"><span class="micro">In place</span>{{CARD_MISSING_DONE}} of {{CARD_MISSING_TOTAL}}</p>
+          <div class="meter" data-done="{{CARD_MISSING_DONE}}" data-total="{{CARD_MISSING_TOTAL}}" aria-hidden="true"><span class="meter__seg"></span><span class="meter__seg"></span><span class="meter__seg"></span><span class="meter__seg"></span><span class="meter__seg"></span></div>
+          <p class="micro pcard__file">{{CARD_FILE}}</p>
+        </li>
+        <!-- /repeat -->
+      </ol>
+    </section>
+
+    <section class="panel">
+      <h2 class="label">How the projects connect</h2>
+      <ul class="chains small">
+        <!-- repeat: CHAIN -->
+        <li class="chain"><span class="chip"><strong>{{CHAIN_FROM}}</strong></span><span class="micro chain__verb">{{CHAIN_VERB}}</span><span class="chip"><strong>{{CHAIN_TO}}</strong></span><span class="chain__why">{{CHAIN_WHY}}</span></li>
+        <!-- /repeat -->
+      </ul>
+    </section>
+
+    <section class="panel">
+      <h2 class="label">Missing or out of date</h2>
+      <ul class="list small">
         <!-- repeat: STALE -->
         <li>{{STALE_ITEM}}</li>
         <!-- /repeat -->

@@ -13,10 +13,10 @@ Read `<brf>/PROTOCOL.md` in full first; it is binding. Then follow the procedure
 add projects myself.
 
 I read these on my phone, on a morning walk, not fully awake, as if I had just come back from a
-long vacation. Keep task ids, codenames, commit hashes, file paths and version strings out of
-everything above the appendices. Tell me why the project matters and what it unlocks for my other
-projects, and make it an invitation: tell me what the project manager will do for me when I step
-back in.
+long vacation. Give me the big picture in about 180 words: the big idea, what it unlocks for my
+other projects, what is missing for it to work, related projects, at most one decision. Keep task
+ids, codenames, commit hashes, file paths and version strings out of everything above the
+appendices.
 
 This repository is read-only for you. Keep every file you make in the work folder brf gives you.
 Do not open my browser. Say plainly what is not done, not shipped, or not verified.

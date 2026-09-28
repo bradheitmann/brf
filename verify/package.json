@@ -1,0 +1,13 @@
+{
+  "name": "brf-verify",
+  "private": true,
+  "type": "module",
+  "description": "The render check behind brf build --verify. Type-check only; Playwright is found at run time, never installed here.",
+  "scripts": {
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  },
+  "devDependencies": {
+    "@types/node": "^24.19.0",
+    "typescript": "^5.9.3"
+  }
+}

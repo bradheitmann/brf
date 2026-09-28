@@ -1,0 +1,25 @@
+[package]
+name = "brf"
+version = "2.0.0"
+edition = "2024"
+rust-version = "1.85"
+description = "Re-entry briefs: one phone-readable page per project, written by your coding agent from the repository's own records."
+license = "MIT"
+repository = "https://github.com/bradheitmann/brf"
+readme = "README.md"
+include = ["src/**", "templates/**", "verify/verify.ts", "Cargo.toml", "Cargo.lock", "README.md", "LICENSE"]
+
+[[bin]]
+name = "brf"
+path = "src/main.rs"
+
+[dependencies]
+libc = "0.2"
+regex = "1"
+serde_json = { version = "1", features = ["preserve_order"] }
+sha2 = "0.10"
+
+[profile.release]
+lto = true
+codegen-units = 1
+strip = true

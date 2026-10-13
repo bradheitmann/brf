@@ -4,6 +4,11 @@ brf follows semantic versioning. Each template carries its own version in its
 `<meta name="brf-template">` tag, and every brief records the brf version and template version it
 was built with.
 
+## brf 2.0.1
+
+- Template wording: the project brief's "What it unlocks" section is now "What depends on it", the meta brief's row label "Unlocks" is "Depends on it", and "Every project, in order" is "All projects, in order". Template versions are 2.0.1; the build and file formats are unchanged.
+- Templates: project 2.0.1, meta 2.0.1.
+
 ## brf 2.0.0
 
 - brf is now one Rust binary, `brf`. Install it with `cargo install --path .` from a clone, or

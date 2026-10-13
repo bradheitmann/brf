@@ -124,6 +124,11 @@ fn normalize(s: &str, old: &Old) -> String {
             (Regex::new(r#"<meta name="brf-version" content="[^"]*">"#).unwrap(), r#"<meta name="brf-version" content="<V>">"#),
             (Regex::new(r#""brf_version": "[^"]*""#).unwrap(), r#""brf_version": "<V>""#),
             (Regex::new(r"brf \d+\.\d+\.\d+").unwrap(), "brf <V>"),
+            // Template versions differ between the archived 1.2.0 templates and the shipped ones.
+            (Regex::new(r#"content="(project|meta) \d+\.\d+\.\d+""#).unwrap(), r#"content="$1 <TV>""#),
+            (Regex::new(r#"template \d+\.\d+\.\d+"#).unwrap(), "template <TV>"),
+            (Regex::new(r#"ships \d+\.\d+\.\d+"#).unwrap(), "ships <TV>"),
+            (Regex::new(r#""version": "\d+\.\d+\.\d+""#).unwrap(), r#""version": "<TV>""#),
             (Regex::new(r#""taken_at": "[^"]*""#).unwrap(), r#""taken_at": "<T>""#),
             (Regex::new(r#""generated_at": "[^"]*""#).unwrap(), r#""generated_at": "<T>""#),
         ]
@@ -455,9 +460,9 @@ fn parity_build_of_the_examples_and_the_templates() {
     // A filled file that has been built already, a template from another major, and a missing fonts marker.
     let built = format!("{}/a0/brf_tidewater_20261102.html", work.path());
     let older = work.join("older.filled.html");
-    write(&older, &read(&example()).replace("content=\"project 2.0.0\"", "content=\"project 1.4.0\""));
+    write(&older, &read(&example()).replace("content=\"project 2.0.1\"", "content=\"project 1.4.0\""));
     let newer_minor = work.join("minor.filled.html");
-    write(&newer_minor, &read(&example()).replace("content=\"project 2.0.0\"", "content=\"project 2.0.1\""));
+    write(&newer_minor, &read(&example()).replace("content=\"project 2.0.1\"", "content=\"project 2.0.2\""));
     let no_fonts = work.join("nofonts.filled.html");
     write(&no_fonts, &read(&example()).replace("/* {{FONTS_CSS}} */", ""));
     for (i, input) in [built, older, newer_minor, no_fonts].iter().enumerate() {

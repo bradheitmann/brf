@@ -20,9 +20,9 @@ fn builds_the_example_fonts_in_comments_out_versions_stamped() {
     let stamp = read_stamp(&html);
     assert_eq!(stamp.brief, Some(2));
     assert_eq!(stamp.repo.as_deref(), Some("tidewater"));
-    assert_eq!(stamp.template.as_deref(), Some("project 2.0.0"));
+    assert_eq!(stamp.template.as_deref(), Some("project 2.0.1"));
     assert_eq!(stamp.brf_version.as_deref(), Some(env!("CARGO_PKG_VERSION")));
-    assert!(re(r"Brief 2 of this project · brf \d+\.\d+\.\d+ · project template 2\.0\.0").is_match(&html));
+    assert!(re(r"Brief 2 of this project · brf \d+\.\d+\.\d+ · project template 2\.0\.1").is_match(&html));
 }
 
 #[test]

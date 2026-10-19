@@ -127,7 +127,7 @@ versioning on their own; see `CHANGELOG.md`.
 | `brf init --output <folder>` | Set up the output folder and point this computer at it |
 | `brf context [--meta]` | JSON for the agent: project name, registration, file name, brief number, earlier briefs, work folder |
 | `brf register --reason "<words>"` | Add the current repository to the registry |
-| `brf snapshot --out <file>` / `--compare <file>` | Record the repository's state and prove it did not change |
+| `brf snapshot --out <file>` / `--compare <file>` | Compare covered Git state, with explicit exclusions |
 | `brf build <filled> --out <work_dir>/<name> [--verify]` | Embed fonts, refuse unfilled slots, stamp versions, render-check |
 | `brf deliver <built>` | File the brief; the project's previous brief moves to `archive/` |
 | `brf check [--file <brief>]` | Check one brief, or the whole folder, against the protocol |
@@ -170,3 +170,19 @@ Protocol and voice rules: `PROTOCOL.md`. Agent procedure: `SKILL.md`. Changes: `
 
 MIT for brf. The embedded fonts (Cormorant Garamond, Inter, JetBrains Mono) are under the SIL Open
 Font License 1.1; see `fonts/OFL.txt`.
+
+### Identity and snapshot boundaries
+
+A repository identity includes its Git host and any non-default port. HTTPS and
+SSH spellings on the same host can match; an unknown SSH alias or mirror is a
+different identity. Case is preserved on hosts without a known case-insensitive
+namespace. A changed host cannot silently retain a registered identity.
+
+`brf snapshot` compares the `git-state-v1` coverage printed in its JSON output.
+`same: true` means that covered state matched, not that every file is unchanged.
+Coverage includes tracked changes, non-ignored untracked contents, ignored path
+names, refs, stashes, worktrees and HEAD's reflog. It excludes ignored contents
+(such as an existing `.env`), Git configuration/hooks, external files and changes
+that happen between its separate reads. Use an independent filesystem-integrity
+control when those excluded inputs matter. No secret file contents enter a
+snapshot. The historical snapshot digest remains compatible with v1.

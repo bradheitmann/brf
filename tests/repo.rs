@@ -48,3 +48,20 @@ fn snapshots_match_when_nothing_changed_and_differ_when_something_did() {
     write(&format!("{dir}/new.txt"), "x");
     assert!(!compare_snapshot(&file, &dir).unwrap().same);
 }
+
+#[test]
+fn ignored_contents_are_explicitly_outside_the_snapshot_guarantee() {
+    let tmp = temp_dir();
+    let repo = git_repo(&tmp.join("fixture"), None);
+    write(&format!("{repo}/.gitignore"), "ignored.txt\n");
+    write(&format!("{repo}/ignored.txt"), "before");
+    let first = take_snapshot(&repo).unwrap();
+    assert_eq!(first["coverage"]["comprehensive"], false);
+    assert!(first["coverage"]["excluded"].as_array().unwrap().iter().any(|v| v == "ignored file contents"));
+    let snap = tmp.join("snapshot.json");
+    save_snapshot(&snap, &first).unwrap();
+    write(&format!("{repo}/ignored.txt"), "after");
+    let comparison = compare_snapshot(&snap, &repo).unwrap();
+    assert!(comparison.same, "same describes the declared Git-state scope only");
+    assert_eq!(comparison.after["coverage"], first["coverage"]);
+}

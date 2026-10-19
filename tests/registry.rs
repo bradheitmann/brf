@@ -67,14 +67,11 @@ fn matches_a_checkout_by_its_recorded_path_or_remote_never_by_name_alone() {
 }
 
 #[test]
-fn remote_keys_ignore_scheme_host_alias_case_and_git() {
-    for u in [
-        format!("git{AT}github.com:Acme/Tide.git"),
-        "https://github.com/acme/tide".to_string(),
-        format!("ssh://git{AT}github.com/acme/tide.git"),
-        format!("git{AT}github-work:acme/tide.git"),
-    ] {
-        assert_eq!(remote_key(&u).as_deref(), Some("acme/tide"), "{u}");
+fn remote_keys_agree_across_github_transports_without_dropping_the_host() {
+    for u in
+        [format!("git{AT}github.com:Acme/Tide.git"), "https://github.com/acme/tide".to_string(), format!("ssh://git{AT}github.com/acme/tide.git")]
+    {
+        assert_eq!(remote_key(&u).as_deref(), Some("github.com/acme/tide"), "{u}");
     }
 }
 
@@ -115,4 +112,30 @@ fn a_missing_registry_is_empty_a_broken_one_is_an_error() {
     assert!(!load_registry(out.path()).unwrap().exists);
     brf::config::write_json_atomic(&brf::registry::registry_path(out.path()), &json!({ "projects": [{ "repo_name": "NOPE" }] })).unwrap();
     assert!(err_text(load_registry(out.path())).contains("lower-case-hyphenated"));
+}
+
+#[test]
+fn remote_identity_preserves_host_port_and_case_sensitive_paths() {
+    assert_ne!(remote_key("https://github.com/acme/tide.git"), remote_key("https://untrusted.invalid/acme/tide.git"));
+    assert_ne!(
+        remote_key(&format!("ssh://git{AT}server.invalid:2222/acme/tide.git")),
+        remote_key(&format!("ssh://git{AT}server.invalid:2223/acme/tide.git"))
+    );
+    assert_ne!(remote_key("https://server.invalid/Acme/Tide.git"), remote_key("https://server.invalid/acme/tide.git"));
+    assert_ne!(remote_key(&format!("git{AT}github-work:acme/tide.git")), remote_key(&format!("git{AT}github.com:acme/tide.git")));
+    assert_eq!(remote_key(&format!("ssh://git{AT}github.com:22/acme/tide.git")), remote_key("https://github.com:443/acme/tide.git"));
+}
+
+#[test]
+fn registered_checkout_rejects_a_changed_remote_host() {
+    let home = temp_dir();
+    let env = test_env(home.path());
+    let out = temp_dir();
+    let repo = out.join("checkout");
+    std::fs::create_dir(&repo).unwrap();
+    write_registry(out.path(), json!([{ "repo_name": "tide", "local_path": repo, "remote": "https://github.com/acme/tide.git" }]));
+    let registry = load_registry(out.path()).unwrap();
+    let result = match_checkout(&registry, &checkout("tide", Some(&repo), Some("https://untrusted.invalid/acme/tide.git")), &env);
+    assert!(result.project.is_none());
+    assert!(result.conflict.is_some());
 }

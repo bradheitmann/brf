@@ -281,7 +281,7 @@ true, so nobody rebuilds something that is already built and committed.
 
 An inventory for the reader, not a cleanup. Change nothing.
 
-- **Prove it.** The before and after snapshots must match; say so in the summary.
+- **Compare covered state.** The before and after snapshots must match; report their coverage and exclusions, not a claim that every repository file is unchanged.
 - **Use Mister Clean if it is installed**: `brf context` reports it, with its version, under
   `tools.mister_clean`. Audit mode only, from the repository root, every output written into the
   work folder:
@@ -360,7 +360,7 @@ width, a chart you need a legend to read.
 - "What it unlocks" or "Related projects" names other registered projects, or the big idea says
   plainly that it stands alone.
 - Every planning location has a verdict, and the drift list names anything already built.
-- The hygiene inventory covers all ten categories and says the repository was unchanged.
+- The hygiene inventory covers all ten categories and reports whether covered Git state matched, with the snapshot's exclusions. It does not assert whole-filesystem integrity.
 - `brf build --verify` and `brf check` are clean, and you looked at the phone and laptop
   screenshots. If the render check was skipped (exit 3), everything else here is still true
   and your reply says the page was not render-checked.

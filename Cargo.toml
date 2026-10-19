@@ -1,6 +1,6 @@
 [package]
 name = "brf"
-version = "2.0.1"
+version = "2.1.0"
 edition = "2024"
 rust-version = "1.85"
 description = "Re-entry briefs: one phone-readable page per project, written by your coding agent from the repository's own records."
@@ -12,12 +12,17 @@ include = ["src/**", "templates/**", "verify/verify.ts", "Cargo.toml", "Cargo.lo
 [[bin]]
 name = "brf"
 path = "src/main.rs"
+required-features = ["full"]
+
+[features]
+default = ["full"]
+full = ["dep:serde_json", "dep:sha2"]
 
 [dependencies]
 libc = "0.2"
 regex = "1"
-serde_json = { version = "1", features = ["preserve_order"] }
-sha2 = "0.10"
+serde_json = { version = "1", features = ["preserve_order"], optional = true }
+sha2 = { version = "0.10", optional = true }
 
 [profile.release]
 lto = true

@@ -246,7 +246,7 @@ Every brief carries three numbers, as meta tags and as a line at the foot of the
 
 - **Brief number:** the count of briefs for that project, 1 for the first. `brf build` works it
   out from the output folder and `brf deliver` refuses a brief whose number is no longer next.
-- **brf version:** the version in `package.json`, semantic versioning.
+- **brf version:** the version in `Cargo.toml`, semantic versioning.
 - **Template version:** from the template's `brf-template` tag. A major bump means filled files
   from the old template no longer build (a slot was renamed or removed); a minor bump adds
   something optional; a patch changes wording or style only. Every change is in `CHANGELOG.md`.

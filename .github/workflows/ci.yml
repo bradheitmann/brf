@@ -32,3 +32,5 @@ jobs:
       - run: cargo fmt --check
       - run: cargo clippy --locked --all-targets -- -D warnings
       - run: cargo test --locked
+      - run: cargo test --locked --no-default-features --lib --test validation
+      - run: cargo clippy --locked --no-default-features --lib -- -D warnings

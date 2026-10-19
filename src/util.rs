@@ -280,6 +280,7 @@ pub fn sort_utf16(v: &mut [String]) {
 }
 
 /// Pretty JSON with two-space indentation, as the 1.x command line printed it.
+#[cfg(feature = "full")]
 pub fn pretty(v: &serde_json::Value) -> String {
     serde_json::to_string_pretty(v).unwrap_or_else(|_| "null".into())
 }

@@ -161,7 +161,7 @@ it skipped (set `BRF_PARITY_REQUIRED=1` to make that a failure, as CI does). To 
 copy of your own brief folder:
 `BRF_PARITY_REAL_DIR=<folder> cargo test --test parity -- --ignored`.
 
-Pushing a version tag (`v2.0.0`) builds macOS and Linux archives and attaches them to a draft
+Pushing a version tag (`v2.1.0`) builds macOS and Linux archives and attaches them to a draft
 release; see `.github/workflows/release.yml`.
 
 Protocol and voice rules: `PROTOCOL.md`. Agent procedure: `SKILL.md`. Changes: `CHANGELOG.md`.
@@ -186,3 +186,34 @@ names, refs, stashes, worktrees and HEAD's reflog. It excludes ignored contents
 that happen between its separate reads. Use an independent filesystem-integrity
 control when those excluded inputs matter. No secret file contents enter a
 snapshot. The historical snapshot digest remains compatible with v1.
+
+## Library adoption
+
+The default build keeps the complete CLI, templates, render verification, Git
+snapshots, registry, and delivery workflow. To validate supplied HTML in an
+embedding application without compiling those capabilities:
+
+```toml
+brf = { version = "2.1", default-features = false }
+```
+
+```rust
+use brf::validation::{BriefInput, validate};
+let report = validate(BriefInput {
+    html: "<main>Example</main>",
+    name: "brf_example_20261019.html",
+    banned_extra: &[],
+});
+assert!(!report.is_valid()); // A finished brief requires its version stamps.
+```
+
+`validation` owns the content allowlist, CSS checks, stamp agreement, and prose
+rules. It treats the supplied name as metadata and performs no I/O. It is a
+protocol checker, not a general-purpose HTML sanitizer or browser-equivalence
+proof. The lightweight surface also includes `html`, `naming`, and `util`.
+`full` enables all existing public modules; `check::*` keeps its content APIs as
+compatibility re-exports and owns file/folder orchestration. Template versions
+and snapshot coverage remain unchanged. Rendering still requires its separate
+runtime and browser dependencies when requested.
+
+Validate this boundary with `cargo test --no-default-features --lib --test validation`.

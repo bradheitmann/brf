@@ -134,9 +134,23 @@ fn normalize(s: &str, old: &Old) -> String {
         ]
     });
     let real = std::fs::canonicalize(&old.root).map(|p| p.to_string_lossy().into_owned()).unwrap_or_else(|_| old.root.clone());
+    let s = s
+        .replace("Record covered Git state and its explicit exclusions.", "Record HEAD and a hash of git status (read-only proof).")
+        .replace("Exit 1 if covered state changed; not a filesystem proof.", "Exit 1 if the repo changed since that snapshot.");
     let mut out = s.replace(&format!("{real}/"), "<BRF>/").replace(&format!("{}/", old.root), "<BRF>/").replace(&format!("{ROOT}/"), "<BRF>/");
     for (re, to) in rules {
         out = re.replace_all(&out, *to).into_owned();
+    }
+    // New snapshots explicitly describe their limited coverage. This is a
+    // deliberate additive security contract, independently tested in repo.rs;
+    // the historical Git-state digest remains byte-compatible.
+    if let Ok(mut value) = serde_json::from_str::<Value>(&out) {
+        if let Some(object) = value.as_object_mut() {
+            if object.get("brf_snapshot").and_then(Value::as_u64) == Some(1) || object.contains_key("same") {
+                object.shift_remove("coverage");
+                return format!("{}\n", serde_json::to_string_pretty(&value).unwrap());
+            }
+        }
     }
     out
 }

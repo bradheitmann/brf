@@ -1,9 +1,6 @@
-// Proof that briefing a repository changed nothing in it.
-//
-// A snapshot hashes everything an agent could disturb: HEAD and the current branch, staged
-// and unstaged changes (their content, not only their paths), the content of untracked files,
-// ignored paths, every ref (branches, tags, remote-tracking refs, the stash), the stash list,
-// the worktree list, and HEAD's reflog. All of it is read with --no-optional-locks and nothing is written.
+// Compare covered Git state, not the whole filesystem. Ignored file contents,
+// Git configuration/hooks and files outside the worktree are not covered.
+// The coverage contract is included in every snapshot and CLI comparison.
 use crate::config::write_json_atomic;
 use crate::error::{Error, Result, io_at};
 use crate::repo::repo_info;
@@ -59,6 +56,15 @@ fn untracked_digest(cwd: &str) -> Result<(String, usize)> {
     Ok((hex(&h.finalize()), list.len()))
 }
 
+pub fn coverage_contract() -> Value {
+    json!({
+        "scope": "git-state-v1",
+        "comprehensive": false,
+        "covered": ["HEAD and branch", "tracked staged/unstaged content", "non-ignored untracked content", "ignored path names", "refs, stashes, worktrees and HEAD reflog"],
+        "excluded": ["ignored file contents", "Git configuration and hooks", "files outside the worktree", "concurrent changes between reads"]
+    })
+}
+
 const PARTS: [&str; 9] = ["head", "branch", "status", "staged", "unstaged", "refs", "stashes", "worktrees", "reflog"];
 
 pub fn take_snapshot(cwd: &str) -> Result<Value> {
@@ -101,6 +107,7 @@ pub fn take_snapshot(cwd: &str) -> Result<Value> {
         "digests": digests,
         "digest": hex(&combined.finalize()),
         "taken_at": iso_now(),
+        "coverage": coverage_contract(),
     }))
 }
 

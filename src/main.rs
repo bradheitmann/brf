@@ -30,8 +30,8 @@ fn help() -> String {
   brf register --reason "<the owner's words>" [--everyday-name <name>] [--repo-name <name>]
                                    Add this repo to the registry. Only when the owner explicitly
                                    asked to add it; asking for a brief is not that request.
-  brf snapshot --out <file>        Record HEAD and a hash of git status (read-only proof).
-  brf snapshot --compare <file>    Exit 1 if the repo changed since that snapshot.
+  brf snapshot --out <file>        Record covered Git state and its explicit exclusions.
+  brf snapshot --compare <file>    Exit 1 if covered state changed; not a filesystem proof.
   brf build <filled.html> --out <work_dir>/<brf_repo_yyyymmdd.html> [--verify] [--proof-dir <dir>]
             [--brief <n>] [--example]
                                    Embed fonts, refuse unfilled slots, stamp versions, render-check.
@@ -244,7 +244,9 @@ fn run(argv: &[String]) -> Result<i32> {
                     }
                     Value::Object(m)
                 };
-                print_json(&json!({ "same": r.same, "changed": r.changed, "before": pick(&r.before), "after": pick(&r.after) }));
+                print_json(
+                    &json!({ "same": r.same, "coverage": brf::snapshot::coverage_contract(), "changed": r.changed, "before": pick(&r.before), "after": pick(&r.after) }),
+                );
                 return Ok(if r.same { 0 } else { 1 });
             }
             let Some(out) = args.text("out") else {

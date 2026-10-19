@@ -100,46 +100,55 @@ fn same_path(a: Option<&str>, b: Option<&str>, env: &Env) -> bool {
 }
 
 static WITH_SCHEME: LazyLock<Regex> =
-    LazyLock::new(|| Regex::new(r"^(?i-u:[a-z][a-z0-9+.-]*)://(?:[^@/]*@)?[^/]+/([^\n\r\x{2028}\x{2029}]*)$").unwrap());
-static SCP_LIKE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"^(?:[^@/:]+@)?[^/:]+:([^\n\r\x{2028}\x{2029}]*)$").unwrap());
+    LazyLock::new(|| Regex::new(r"^(?i-u:([a-z][a-z0-9+.-]*))://(?:[^@/]*@)?([^/]+)/([^\n\r\x{2028}\x{2029}]*)$").unwrap());
+static SCP_LIKE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"^(?:[^@/:]+@)?(\[[^\]]+\]|[^/:]+):([^\n\r\x{2028}\x{2029}]*)$").unwrap());
 
-/// The whole repository path of a remote, after the host, lower case: "acme/tide" for
-/// github.com/acme/tide, "orga/payments/_git/api" for an Azure repo. Scheme, user, host, port
-/// and SSH host aliases are dropped, so every clone of one remote gives one key.
+/// Repository identity includes the host and non-default port. Unknown SSH
+/// aliases and mirrors are distinct identities; never infer trust from a path.
+/// Only GitHub's documented case-insensitive namespace is case-folded.
 pub fn remote_key(url: &str) -> Option<String> {
-    if url.is_empty() {
+    let s = trim(url);
+    if s.is_empty() {
         return None;
     }
-    let s = trim(url);
-    let path = if let Some(c) = WITH_SCHEME.captures(s) {
-        c[1].to_string()
+    let (mut host, mut path, scheme) = if let Some(c) = WITH_SCHEME.captures(s) {
+        (c[2].to_lowercase(), c[3].to_string(), c[1].to_lowercase())
     } else if let Some(c) = SCP_LIKE.captures(s) {
-        c[1].to_string()
+        (c[1].to_lowercase(), c[2].to_string(), "ssh".to_string())
     } else {
-        s.to_string()
+        return Some(format!("local:{}", s.trim_end_matches('/')));
     };
-    let lower = path.to_lowercase();
-    let lower = lower.trim_end_matches('/');
-    let lower = lower.strip_suffix(".git").unwrap_or(lower);
-    let lower = lower.trim_start_matches('/');
-    // Hosts that spell one repository two ways: Azure DevOps (HTTPS "org/project/_git/repo",
-    // SSH "v3/org/project/repo") and Bitbucket Server (HTTPS "scm/project/repo", SSH "project/repo").
-    let mut parts: Vec<&str> = lower.split('/').collect();
-    if parts.len() >= 3 && (parts[0] == "v3" || parts[0] == "scm") {
-        parts.remove(0);
+    let default_port = match scheme.as_str() {
+        "https" => ":443",
+        "http" => ":80",
+        "ssh" => ":22",
+        _ => "",
+    };
+    if !default_port.is_empty() && host.ends_with(default_port) {
+        host.truncate(host.len() - default_port.len());
     }
-    if let Some(g) = parts.iter().position(|p| *p == "_git") {
-        if g > 0 && g == parts.len() - 2 {
-            parts.remove(g);
+    // These two Azure hosts are a provider-defined spelling of one identity.
+    if host == "ssh.dev.azure.com" {
+        host = "dev.azure.com".to_string();
+        if let Some(rest) = path.strip_prefix("v3/") {
+            path = rest.to_string();
         }
     }
-    let key = parts.join("/");
-    if key.is_empty() { None } else { Some(key) }
+    if host == "dev.azure.com" {
+        path = path.replace("/_git/", "/");
+    }
+    if host == "github.com" {
+        path = path.to_lowercase();
+    }
+    let path = path.trim_end_matches('/');
+    let path = path.strip_suffix(".git").unwrap_or(path);
+    let path = path.trim_start_matches('/');
+    if host.is_empty() || path.is_empty() { None } else { Some(format!("{host}/{path}")) }
 }
 
 fn same_remote(a: Option<&str>, b: Option<&str>) -> bool {
     match (a, b) {
-        (Some(a), Some(b)) if !a.is_empty() && !b.is_empty() => remote_key(a) == remote_key(b),
+        (Some(a), Some(b)) if !a.is_empty() && !b.is_empty() => matches!((remote_key(a), remote_key(b)), (Some(a), Some(b)) if a == b),
         _ => false,
     }
 }

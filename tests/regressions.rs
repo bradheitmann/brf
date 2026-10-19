@@ -393,14 +393,14 @@ fn check_follows_html_s_rules_for_comments_text_only_elements_whitespace_and_ent
 }
 
 #[test]
-fn remote_keys_agree_across_https_and_ssh_on_azure_devops_and_bitbucket_server() {
+fn remote_keys_agree_on_provider_defined_aliases_but_do_not_guess_custom_mirrors() {
     let at = "@";
     assert_eq!(remote_key("https://dev.azure.com/OrgA/Payments/_git/api"), remote_key(&format!("git{at}ssh.dev.azure.com:v3/OrgA/Payments/api")));
-    assert_eq!(
+    assert_ne!(
         remote_key("https://bitbucket.example.com/scm/proj/repo.git"),
         remote_key(&format!("ssh://git{at}bitbucket.example.com:7999/proj/repo.git"))
     );
-    assert_eq!(remote_key("https://github.com/scm/repo").as_deref(), Some("scm/repo"));
+    assert_eq!(remote_key("https://github.com/scm/repo").as_deref(), Some("github.com/scm/repo"));
 }
 
 #[test]

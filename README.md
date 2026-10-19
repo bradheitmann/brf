@@ -191,10 +191,12 @@ snapshot. The historical snapshot digest remains compatible with v1.
 
 The default build keeps the complete CLI, templates, render verification, Git
 snapshots, registry, and delivery workflow. To validate supplied HTML in an
-embedding application without compiling those capabilities:
+embedding application without compiling those capabilities, use the Git source
+pinned below. The binary install and release paths described above do not imply
+that the Rust library is published on crates.io.
 
 ```toml
-brf = { version = "2.1", default-features = false }
+brf = { git = "https://github.com/bradheitmann/brf", rev = "5960d4b284fe503535800543c894064075bd3355", default-features = false }
 ```
 
 ```rust
